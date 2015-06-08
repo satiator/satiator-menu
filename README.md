@@ -20,7 +20,8 @@ access to their software.
 
 This is pre-alpha software.
 
-There is a Yabause fork with Satisfier emulation support;
+There is a Yabause fork with Satisfier emulation support
+[here](https://github.com/abrasive/satisfier-yabause);
 this is partially complete. Currently supports the
 filesystem API; drive emulation is still to come.
 The filesystem API emulation uses some fairly recent POSIX
