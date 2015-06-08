@@ -171,6 +171,14 @@ int s_rename(char *old, char *new) {
     return 0;
 }
 
+// Create a directory.
+int s_mkdir(char *filename) {
+    int len = strlen(filename);
+    buffer_write(filename, len);
+    simplecall(c_mkdir, 0, 0, len);
+    return 0;
+}
+
 // Delete a file.
 int s_unlink(char *filename) {
     int len = strlen(filename);
@@ -180,10 +188,18 @@ int s_unlink(char *filename) {
 }
 
 // Open a directory to read file entries.
-int s_readdir(char *filename) {
+int s_opendir(char *filename) {
     int len = strlen(filename);
     buffer_write(filename, len);
-    simplecall(c_readdir, 0, 0, len);
+    simplecall(c_opendir, 0, 0, len);
+    return 0;
+}
+
+// Change working directory.
+int s_chdir(char *filename) {
+    int len = strlen(filename);
+    buffer_write(filename, len);
+    simplecall(c_chdir, 0, 0, len);
     return 0;
 }
 // }}}
