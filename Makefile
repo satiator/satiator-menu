@@ -29,7 +29,7 @@ out/menu_code.bin: out/menu.elf
 	$(OBJCOPY) -O binary $< $@
 
 out/menu.elf: ldscript.ld $(OBJS) iapetus-build/src/libiapetus.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -T ldscript.ld -Wl,-Map out/menu.map $(OBJS) -liapetus -lgcc
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -T ldscript.ld -Wl,-Map=out/menu.map $(OBJS) -liapetus -lgcc
 
 out/%.o: %.c out/.dir_exists
 	$(CC) $(CFLAGS) -c $< -o $@
