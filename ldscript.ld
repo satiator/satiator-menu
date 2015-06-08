@@ -21,6 +21,7 @@ SECTIONS {
 
         *(.text);
         *(.rodata);
+        *(.rodata.*);
         *(.data);
         __load_end = .;
         *(.bss);
