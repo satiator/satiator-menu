@@ -12,7 +12,6 @@ CROSS_COMPILE ?= sh-none-elf-
 IAPETUS_SRC ?= $(shell pwd)/../iapetus
 
 CC = $(CROSS_COMPILE)gcc
-LD = $(CROSS_COMPILE)ld
 OBJCOPY = $(CROSS_COMPILE)objcopy
 
 CFLAGS ?= -O2 -m2 -nostdlib -Wall
@@ -30,7 +29,7 @@ out/menu_code.bin: out/menu.elf
 	$(OBJCOPY) -O binary $< $@
 
 out/menu.elf: ldscript.ld $(OBJS) iapetus-build/src/libiapetus.a
-	$(LD) $(LDFLAGS) -o $@ -T ldscript.ld -Map out/menu.map $(OBJS) -liapetus
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -T ldscript.ld -Wl,-Map out/menu.map $(OBJS) -liapetus -lgcc
 
 out/%.o: %.c out/.dir_exists
 	$(CC) $(CFLAGS) -c $< -o $@

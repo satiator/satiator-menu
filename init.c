@@ -6,6 +6,7 @@
 
 #include <iapetus.h>
 #include "satisfier.h"
+#include <string.h>
 
 // Reset everything we can before loading the menu.
 void sysinit(void) {
@@ -34,8 +35,16 @@ void sysinit(void) {
 // wipe off the menu neatly before we come up
 void fadeout(void);
 
+extern char _load_start, _load_end, _bss_end;
+
 void start(void) __attribute__((section(".start")));
 void start(void) {
+    // the BIOS only reads 0x1000 bytes when we begin. read the
+    // lot and zero BSS
+    int nsec = ((&_load_end-&_load_start-1) / 0x800) + 1;
+    bios_get_mpeg_rom(2, nsec, (u32)&_load_start);
+    memset(&_load_end, 0, &_bss_end-&_load_start);
+
     fadeout();
     sysinit();
 

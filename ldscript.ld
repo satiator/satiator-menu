@@ -10,16 +10,20 @@ OUTPUT_ARCH(sh)
 ENTRY(_start)
 
 MEMORY {
-    /* length (IP load size) determined by header in ip.bin */
-    initial (rwx) : org = 0x200000, l = 0x2000
+    initial (rwx) : org = 0x200000, l = 0x8000
 }
 
 SECTIONS {
     .initial : {
+        __load_start = .;
         *(.start);
+        *ashiftrt.o(.text); /* necessary for the BIOS load */
+
         *(.text);
         *(.rodata);
         *(.data);
+        __load_end = .;
         *(.bss);
+        __bss_end = .;
     } >initial
 }
