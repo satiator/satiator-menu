@@ -13,6 +13,11 @@ void *memset(void *s, int c, size_t n) {
     return NULL; // I mean come on
 }
 
+void *memcpy(void *d, const void *s, size_t n) {
+    while (n--) *(*((unsigned char**)&s))++ = *(*((unsigned char**)&d))++;
+    return NULL;
+}
+
 size_t strlen(const char *str) {
     int n = 0;
     while (*str++)
