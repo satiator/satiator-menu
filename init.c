@@ -35,6 +35,8 @@ void sysinit(void) {
 // wipe off the menu neatly before we come up
 void fadeout(void);
 
+void test_file_io(void);
+
 extern char _load_start, _load_end, _bss_end;
 
 void start(void) __attribute__((section(".start")));
@@ -48,17 +50,7 @@ void start(void) {
     fadeout();
     sysinit();
 
-    // hacky file testing.
-    char buf[128];
-    int i;
-    buf[0] = 'f';
-    buf[1] = 0;
-
-    int fd = s_open(buf, FA_READ|FA_WRITE|FA_CREATE_ALWAYS);
-    for (i=0; i<128; i++)
-        buf[i] = 3*i;
-    s_write(fd, buf, 128);
-    s_close(fd);
+    test_file_io();
 
     for(;;);
 }
