@@ -66,4 +66,20 @@ typedef enum {
 // }}}
 
 // API
+typedef struct {
+    uint32_t size;
+    uint16_t date, time;
+    uint8_t attrib;
+    char name[];
+} __attribute__((packed)) s_stat_t;
+
 int s_open(char *filename, int flags);
+int s_close(int fd);
+int s_seek(int fd, int offset);
+int s_read(int fd, void *buf, int len);
+int s_write(int fd, void *buf, int len);
+int s_truncate(int fd);
+int s_stat(char *filename, s_stat_t *stat, int statsize);
+int s_rename(char *old, char *new);
+int s_unlink(char *filename);
+int s_readdir(char *filename);
