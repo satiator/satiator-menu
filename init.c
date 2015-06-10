@@ -50,7 +50,7 @@ void start(void) {
     fadeout();
     sysinit();
 
-    test_file_io();
+    s_emulate("test.desc");
 
     for(;;);
 }

@@ -203,3 +203,25 @@ int s_chdir(char *filename) {
     return 0;
 }
 // }}}
+
+// System API {{{
+
+// Given the filename of a disc descriptor, try and boot into it.
+int boot_disc(void);
+int s_emulate(char *filename) {
+    int len = strlen(filename);
+    buffer_write(filename, len);
+    cmd_t cmd;
+    set_cmd(cmd, c_emulate, 0, 0, len);
+    exec_cmd(cmd, HIRQ_MPED);
+    get_stat();
+    // if emulation failed, the API is still here and we got
+    // the canary value.  if it succeeded, the API went away,
+    // and we get the MPEG Status return value
+    if (sat_result[2] == 0x5555 &&
+        sat_result[3] == 0xaaaa)
+        return sat_result[0] >> 8;
+
+    return boot_disc();
+}
+// }}}

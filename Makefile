@@ -19,7 +19,7 @@ CFLAGS += -I$(IAPETUS_SRC)/src
 
 LDFLAGS += -Liapetus-build/src
 
-SRCS := init.c fade.c satisfier.c libc.c test.c
+SRCS := init.c fade.c satisfier.c libc.c jhloader.c test.c
 OBJS := $(addprefix out/,$(SRCS:.c=.o))
 
 out/menu.bin: ip.bin out/menu_code.bin

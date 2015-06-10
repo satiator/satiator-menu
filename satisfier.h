@@ -27,6 +27,7 @@ typedef enum {
     c_opendir,
     c_readdir,
     c_chdir,
+    c_emulate,
 } satisfier_cmd_t;
 // }}}
 
@@ -86,3 +87,4 @@ int s_mkdir(char *filename);
 int s_unlink(char *filename);
 int s_opendir(char *filename);
 int s_chdir(char *filename);
+int s_emulate(char *filename);
