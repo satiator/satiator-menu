@@ -18,6 +18,11 @@ void *memcpy(void *d, const void *s, size_t n) {
     return NULL;
 }
 
+char *strcpy(char *dest, const char *src) {
+    while (*dest++ = *src++);
+    return NULL;
+}
+
 size_t strlen(const char *str) {
     int n = 0;
     while (*str++)
