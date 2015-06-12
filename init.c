@@ -46,7 +46,7 @@ void start(void) {
     // lot and zero BSS
     int nsec = ((&_load_end-&_load_start-1) / 0x800) + 1;
     bios_get_mpeg_rom(2, nsec, (u32)&_load_start);
-    memset(&_load_end, 0, &_bss_end-&_load_start);
+    memset(&_load_end, 0, &_bss_end-&_load_end);
 
     fadeout();
     sysinit();
