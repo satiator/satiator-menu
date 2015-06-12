@@ -16,13 +16,13 @@ void test_file_io(void) {
     s_close(fd);
 
     fd = s_open("foo.bar", FA_READ|FA_WRITE);
-    s_seek(fd, 96);
+    s_seek(fd, 96, C_SEEK_SET);
     s_truncate(fd);
-    s_seek(fd, 48);
+    s_seek(fd, 48, C_SEEK_SET);
     s_read(fd, buf, 32);
     for (i=0; i<32; i++)
         buf[i] &= 0xf0;
-    s_seek(fd, 48);
+    s_seek(fd, 48, C_SEEK_SET);
     s_write(fd, buf, 32);
     s_close(fd);
 

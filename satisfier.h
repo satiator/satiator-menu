@@ -4,6 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, you can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include <stdint.h>
+
 // XXX include this from its proper place {{{
 typedef enum {
     c_get_status = 0x90,
@@ -29,6 +31,10 @@ typedef enum {
     c_chdir,
     c_emulate,
 } satisfier_cmd_t;
+
+#define C_SEEK_SET  0
+#define C_SEEK_CUR  1
+#define C_SEEK_END  2
 // }}}
 
 
@@ -77,7 +83,7 @@ typedef struct {
 
 int s_open(char *filename, int flags);
 int s_close(int fd);
-int s_seek(int fd, int offset);
+int s_seek(int fd, int offset, int whence);
 int s_read(int fd, void *buf, int len);
 int s_write(int fd, void *buf, int len);
 int s_truncate(int fd);

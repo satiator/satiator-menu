@@ -105,8 +105,8 @@ int s_close(int fd) {
 }
 
 // Seek to a byte on an fd. Returns the offset
-int s_seek(int fd, int offset) {
-    simplecall(c_seek, fd, 0, offset);
+int s_seek(int fd, int offset, int whence) {
+    simplecall(c_seek, fd, whence, offset);
     return (sat_result[2]<<16) | sat_result[3];
 }
 
