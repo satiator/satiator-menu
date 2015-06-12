@@ -112,7 +112,7 @@ int s_seek(int fd, int offset, int whence) {
 
 // Read some data. Returns bytes read
 int s_read(int fd, void *buf, int len) {
-    if (len > 2048 || len < 0)
+    if (len > S_MAXBUF || len < 0)
         return FR_INVALID_PARAMETER;
     simplecall(c_read, fd, 0, len);
     len = get_length();
@@ -122,7 +122,7 @@ int s_read(int fd, void *buf, int len) {
 
 // Write some data. Returns bytes written
 int s_write(int fd, void *buf, int len) {
-    if (len > 2048 || len < 0)
+    if (len > S_MAXBUF || len < 0)
         return FR_INVALID_PARAMETER;
     buffer_write(buf, len);
     simplecall(c_write, fd, 0, len);
