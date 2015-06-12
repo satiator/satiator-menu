@@ -10,11 +10,12 @@ OUTPUT_ARCH(sh)
 ENTRY(_start)
 
 MEMORY {
-    initial (rwx) : org = 0x200000, l = 0x8000
+    /* all of low Work RAM is free for our use, woo */
+    work_low (rwx) : org = 0x200000, l = 0x100000
 }
 
 SECTIONS {
-    .initial : {
+    .ram : {
         __load_start = .;
         *(.start);
         *ashiftrt.o(.text); /* necessary for the BIOS load */
@@ -26,5 +27,8 @@ SECTIONS {
         __load_end = .;
         *(.bss);
         __bss_end = .;
-    } >initial
+        . = ALIGN(4);
+        __free_ram_begin = .;
+        __free_ram_end = __load_start + 0x100000;
+    } >work_low
 }

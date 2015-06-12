@@ -74,7 +74,7 @@ static inline void set_cmd(cmd_t cmd, int op, int fd, int flags, int len) {
     get_stat();                             \
     uint8_t __retval = sat_result[0] >> 8;  \
     if (__retval)                           \
-        return __retval;                    \
+        return -__retval;                   \
 } while(0);
 
 #define get_length()    ((sat_result[2]<<16) | sat_result[3])

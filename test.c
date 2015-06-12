@@ -1,4 +1,5 @@
 #include <iapetus.h>
+#include <stdio.h>
 #include "satisfier.h"
 
 void test_file_io(void) {
@@ -47,4 +48,12 @@ void test_file_io(void) {
 
     s_chdir("..");
     s_unlink("baz.foo");
+}
+
+void test_stdio(void) {
+    FILE *fp = fopen("stdio.txt", "w");
+    fprintf(fp, "Hello world!\n");
+    fwrite("123456", 6, 1, fp);
+    fputc(0x55, fp);
+    fclose(fp);
 }

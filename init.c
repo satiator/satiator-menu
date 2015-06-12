@@ -36,6 +36,7 @@ void sysinit(void) {
 void fadeout(void);
 
 void test_file_io(void);
+void test_stdio(void);
 
 extern char _load_start, _load_end, _bss_end;
 
@@ -50,6 +51,8 @@ void start(void) {
     fadeout();
     sysinit();
 
+    test_stdio();
+    for(;;);
     s_emulate("test.desc");
 
     for(;;);
