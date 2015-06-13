@@ -15,7 +15,7 @@ NEWLIB_SRC ?= $(shell pwd)/../newlib-2.2.0.20150423
 CC = $(CROSS_COMPILE)gcc
 OBJCOPY = $(CROSS_COMPILE)objcopy
 
-CFLAGS ?= -O2 -m2 -nostdlib -Wall
+CFLAGS ?= -O0 -m2 -nostdlib -Wall -ggdb3
 CFLAGS += -I$(IAPETUS_SRC)/src
 
 IAPETUS_LIBDIR=iapetus-build/src
@@ -52,7 +52,7 @@ distclean:
 
 iapetus-build/Makefile:
 	mkdir -p iapetus-build
-	(cd iapetus-build; CC=$(CC) cmake $(IAPETUS_SRC))
+	(cd iapetus-build; CC=$(CC) CMAKE_C_FLAGS=-ggdb3 cmake $(IAPETUS_SRC))
 
 iapetus-build/src/libiapetus.a: iapetus-build/Makefile
 	(cd iapetus-build; make)
