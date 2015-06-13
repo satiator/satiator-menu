@@ -26,6 +26,7 @@ SECTIONS {
         *(.data);
         __load_end = .;
         *(.bss);
+        *(COMMON);
         __bss_end = .;
         . = ALIGN(4);
         __free_ram_begin = .;
