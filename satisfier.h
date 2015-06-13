@@ -50,6 +50,17 @@ typedef enum {
 #define	FA_CREATE_ALWAYS	0x08
 #define	FA_OPEN_ALWAYS		0x10
 
+/* File attribute bits for directory entry */
+
+#define AM_RDO  0x01    /* Read only */
+#define AM_HID  0x02    /* Hidden */
+#define AM_SYS  0x04    /* System */
+#define AM_VOL  0x08    /* Volume label */
+#define AM_LFN  0x0F    /* LFN entry */
+#define AM_DIR  0x10    /* Directory */
+#define AM_ARC  0x20    /* Archive */
+#define AM_MASK 0x3F    /* Mask of defined bits */
+
 typedef enum {
 	FR_OK = 0,				/* (0) Succeeded */
 	FR_DISK_ERR,			/* (1) A hard error occurred in the low level disk I/O layer */
