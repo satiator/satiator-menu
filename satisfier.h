@@ -5,6 +5,7 @@
  * file, you can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <stdint.h>
+#include <stdio.h>
 
 // XXX include this from its proper place {{{
 typedef enum {
@@ -96,3 +97,5 @@ int s_chdir(char *filename);
 int s_emulate(char *filename);
 
 #define S_MAXBUF    2048
+
+#define DBG(...) do { printf(__VA_ARGS__); fflush(stdout); } while(0)

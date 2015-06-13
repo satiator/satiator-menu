@@ -51,7 +51,9 @@ void start(void) {
     fadeout();
     sysinit();
 
-    test_stdio();
+    // debugging: log to a file
+    stdout = fopen("debug.log", "w");
+
     for(;;);
     s_emulate("test.desc");
 
