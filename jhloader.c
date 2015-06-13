@@ -52,7 +52,7 @@ static int set_image_region(u8 *base)
    base[0x40] = str[0];
 
    // set region footer
-   char *ptr = base + 0xe00;
+   char *ptr = (char*)base + 0xe00;
    memset(ptr, ' ', 0x20);
    *(uint32_t*)ptr = 0xa00e0009;
    strcpy(ptr + 4, "For ");
@@ -96,7 +96,7 @@ static int emulate_bios_loadcd_read(void)
 }
 
 
-void boot_disc(void)
+int boot_disc(void)
 {
    int ret;
    if ((ret = emulate_bios_loadcd_init()) < 0)
