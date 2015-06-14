@@ -105,6 +105,7 @@ int s_mkdir(char *filename);
 int s_unlink(char *filename);
 int s_opendir(char *filename);
 int s_chdir(char *filename);
+int s_getcwd(char *filename, int buflen);
 int s_emulate(char *filename);
 
 #define S_MAXBUF    2048

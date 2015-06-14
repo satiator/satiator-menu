@@ -204,6 +204,19 @@ int s_chdir(char *filename) {
 }
 // }}}
 
+// Get working directory. Adds terminating null. {{{
+int s_getcwd(char *filename, int buflen) {
+    buffer_write(".", 1);
+    simplecall(c_chdir, 0, 0, 1);
+    buflen--;
+    if (buflen > get_length())
+        buflen = get_length();
+    buffer_read(filename, buflen);
+    filename[buflen] = 0;
+    return buflen;
+}
+// }}}
+
 // System API {{{
 
 // Given the filename of a disc descriptor, try and boot into it.
