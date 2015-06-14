@@ -7,6 +7,7 @@
 #include <iapetus.h>
 #include <string.h>
 #include <stdio.h>
+#include "satisfier.h"
 #include "menu.h"
 
 static font_struct main_font;
@@ -43,7 +44,7 @@ void menu_init(void) {
 
 #define SCROLL_OFF 3
 
-int menu_picklist(file_ent *entries, int n_entries, font_struct *font) {
+int menu_picklist(file_ent *entries, int n_entries, char *caption, font_struct *font) {
     int width, height;
     int old_transparent;
 
@@ -64,8 +65,11 @@ int menu_picklist(file_ent *entries, int n_entries, font_struct *font) {
 
     for(;;) {
         gui_window_draw(8, 8, width-16, height-16, TRUE, 0, RGB16(26, 26, 25) | 0x8000);
+        vdp_vsync();
         vdp_clear_screen(font);
-        vdp_print_text(font, 8+6, 8+4, 0xf, "Choose one, making you better feeling");
+        char namebuf[256];
+        s_getcwd(namebuf, sizeof(namebuf));
+        vdp_print_text(font, 8+6, 8+4, 0xf, caption);
         // draw some entries
         int i;
         for (i=0; i<n_rows; i++) {

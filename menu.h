@@ -11,4 +11,4 @@ typedef struct {
 } file_ent;
 
 void menu_init(void);
-int menu_picklist(file_ent *entries, int n_entries, font_struct *font);
+int menu_picklist(file_ent *entries, int n_entries, char *caption, font_struct *font);

@@ -62,7 +62,7 @@ void test_stdio(void) {
 #include "menu.h"
 static file_ent * list_files(const char *dir, int *entries) {
     *entries = 0;
-    if (s_opendir("."))
+    if (s_opendir(dir))
         return NULL;
     char statbuf[280];
     s_stat_t *st = (s_stat_t*)statbuf;
@@ -72,7 +72,6 @@ static file_ent * list_files(const char *dir, int *entries) {
     if (!list)
         return NULL;
     int len;
-    DBG("  list: %X\n", list);
     while ((len = s_stat(NULL, st, sizeof(statbuf)-1)) > 0) {
         st->name[len] = 0;
         if (!strcmp(st->name, "."))
@@ -128,7 +127,11 @@ void test_menu(void) {
         int nents;
         file_ent *list = list_files(".", &nents);
         sort_list(list, nents);
-        int entry = menu_picklist(list, nents, NULL);
+        char namebuf[256], pathbuf[256];
+        strcpy(namebuf, "Satisfier - ");
+        s_getcwd(pathbuf, sizeof(pathbuf));
+        strcat(namebuf, pathbuf);
+        int entry = menu_picklist(list, nents, namebuf, NULL);
         if (entry == -1)
             s_chdir("..");
         if (list[entry].isdir)
