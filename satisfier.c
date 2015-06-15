@@ -12,8 +12,8 @@
 
 typedef uint16_t cmd_t[4];
 
-static inline void exec_cmd(cmd_t cr, uint16_t wait) {
-    CDB_REG_HIRQ = 0;
+void exec_cmd(cmd_t cr, uint16_t wait) {
+    CDB_REG_HIRQ = ~(HIRQ_CMOK | wait);
     CDB_REG_CR1 = cr[0];
     CDB_REG_CR2 = cr[1];
     CDB_REG_CR3 = cr[2];
