@@ -205,9 +205,8 @@ int s_chdir(char *filename) {
     simplecall(c_chdir, 0, 0, len);
     return 0;
 }
-// }}}
 
-// Get working directory. Adds terminating null. {{{
+// Get working directory. Adds terminating null.
 int s_getcwd(char *filename, int buflen) {
     buffer_write(".", 1);
     simplecall(c_chdir, 0, 0, 1);
