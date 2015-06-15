@@ -42,14 +42,17 @@ static inline int buffer_xfer(void *buf, int len, int dir) {
 
     while (!(CDB_REG_HIRQ & HIRQ_DRDY));
 
-    uint16_t *p = buf;
-    uint16_t n = (len+1)/2;
+    uint32_t *p = buf;
+    uint16_t n = (len+3)/4;
     if (dir) {
         while (n--)
-            CDB_REG_DATATRNS16 = *p++;
+            CDB_REG_DATATRNS = *p++;
+        // mandatory but mysterious
+        CDB_REG_DATATRNS = 0;
+        CDB_REG_DATATRNS = 0;
     } else {
         while (n--)
-            *p++ = CDB_REG_DATATRNS16;
+            *p++ = CDB_REG_DATATRNS;
     }
 
     return 0;
