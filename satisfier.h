@@ -107,7 +107,11 @@ int s_opendir(char *filename);
 int s_chdir(char *filename);
 int s_getcwd(char *filename, int buflen);
 int s_emulate(char *filename);
+int s_mode(int mode);
 
 #define S_MAXBUF    2048
+
+#define S_MODE_CDROM    0
+#define S_MODE_USBFS    1
 
 #define DBG(...) do { printf(__VA_ARGS__); fflush(stdout); } while(0)

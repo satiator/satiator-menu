@@ -218,23 +218,27 @@ int s_getcwd(char *filename, int buflen) {
 // }}}
 
 // System API {{{
+static int cur_mode = S_MODE_CDROM;
+int s_mode(int mode) {
+    if (mode != cur_mode) {
+        cmd_t cmd = {0x9300, 1, 0, 0};
+        exec_cmd(cmd, 0);
+        cur_mode = mode;
+    }
+    return 0;
+}
 
 // Given the filename of a disc descriptor, try and boot into it.
 int boot_disc(void);
 int s_emulate(char *filename) {
     int len = strlen(filename);
     buffer_write(filename, len);
-    cmd_t cmd;
-    set_cmd(cmd, c_emulate, 0, 0, len);
-    exec_cmd(cmd, HIRQ_MPED);
-    get_stat();
-    // if emulation failed, the API is still here and we got
-    // the canary value.  if it succeeded, the API went away,
-    // and we get the MPEG Status return value
-    if (sat_result[2] == 0x5555 &&
-        sat_result[3] == 0xaaaa)
-        return sat_result[0] >> 8;
-
-    return boot_disc();
+    simplecall(c_emulate, 0, 0, len);
+    while (is_cd_present());
+    while (!is_cd_present());
+    s_mode(S_MODE_CDROM);
+    int ret = boot_disc();
+    s_mode(S_MODE_USBFS);
+    return ret;
 }
 // }}}

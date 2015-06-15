@@ -52,6 +52,9 @@ void start(void) {
     fadeout();
     sysinit();
 
+    // enable Satisfier API
+    s_mode(S_MODE_USBFS);
+
     // debugging: log to a file
     stdout = fopen("debug.log", "w");
 

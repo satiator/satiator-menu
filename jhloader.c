@@ -14,6 +14,7 @@ static int emulate_bios_loadcd_init(void) {
    cd_end_transfer();
    cd_reset_selector_all();
    cd_set_sector_size(SECT_2048);
+   cd_auth();   // gotta make sure that's a real disc thar
    return 0;
 }
 
@@ -99,9 +100,20 @@ static int emulate_bios_loadcd_read(void)
 int boot_disc(void)
 {
    int ret;
+
+#if 0
+   // authentic boot
+   bios_loadcd_init();
+   bios_loadcd_read();
+#else
+   // region free boot
    if ((ret = emulate_bios_loadcd_init()) < 0)
        return ret;
    if ((ret = emulate_bios_loadcd_read()) < 0)
        return ret;
-   return bios_loadcd_boot();
+#endif
+   while (cd_is_data_ready(0) < 16)
+       vdp_vsync();
+   ret = bios_loadcd_boot();
+   return ret;
 }
