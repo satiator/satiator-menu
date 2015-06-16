@@ -115,10 +115,10 @@ int _lseek(int file, int ptr, int dir) {
 }
 
 int _open(const char *name, int flags, ...) {
-    int s_flags = 0;
-    if (flags & O_RDONLY)
-        s_flags |= FA_READ;
+    int s_flags = FA_READ;
     if (flags & O_WRONLY)
+        s_flags = FA_WRITE;
+    if (flags & O_RDWR)
         s_flags |= FA_WRITE;
     if (flags & O_TRUNC)
         s_flags |= FA_CREATE_ALWAYS;
