@@ -100,11 +100,10 @@ static int emulate_bios_loadcd_read(void)
 int boot_disc(void)
 {
    int ret;
-
-#if 0
+#if 1
    // authentic boot
-   bios_loadcd_init();
-   bios_loadcd_read();
+   ret = bios_loadcd_init();
+   ret = bios_loadcd_read();
 #else
    // region free boot
    if ((ret = emulate_bios_loadcd_init()) < 0)
@@ -112,8 +111,9 @@ int boot_disc(void)
    if ((ret = emulate_bios_loadcd_read()) < 0)
        return ret;
 #endif
-   while (cd_is_data_ready(0) < 16)
+   do {
+       ret = bios_loadcd_boot();
        vdp_vsync();
-   ret = bios_loadcd_boot();
+   } while (ret == 1);
    return ret;
 }
