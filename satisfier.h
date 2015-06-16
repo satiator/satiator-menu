@@ -113,6 +113,7 @@ int s_close(int fd);
 int s_seek(int fd, int offset, int whence);
 int s_read(int fd, void *buf, int len);
 int s_write(int fd, void *buf, int len);
+int s_sync(int fd);
 int s_truncate(int fd);
 int s_stat(char *filename, s_stat_t *stat, int statsize);
 int s_rename(char *old, char *new);

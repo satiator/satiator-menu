@@ -176,6 +176,13 @@ int _write(int file, char *ptr, int len) {
     return nwritten;
 }
 
+int fsync(int file) {
+    if (file < 3)
+        return -1;
+    int ret = s_sync(file-3);
+    return set_errno(ret);
+}
+
 extern char _free_ram_begin, _free_ram_end;
 static char *brk = &_free_ram_begin;
 caddr_t _sbrk(int incr) {

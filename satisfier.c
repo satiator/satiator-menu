@@ -132,6 +132,11 @@ int s_write(int fd, void *buf, int len) {
     return get_length();
 }
 
+// Flush any buffered data to file
+int s_sync(int fd) {
+    return s_seek(fd, 0, C_SEEK_CUR);
+}
+
 // Truncate file at current pointer. Returns new length
 int s_truncate(int fd) {
     simplecall(c_truncate, fd, 0, 0);
