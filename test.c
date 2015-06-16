@@ -148,6 +148,7 @@ void test_menu(void) {
                 s_emulate("out.desc");
             else
                 s_emulate(name);
+            free(name);
         }
     }
 }
