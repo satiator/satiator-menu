@@ -25,7 +25,7 @@ NEWLIB_LIBDIR=newlib-build/prefix/$(NEWLIB_ARCH)/lib
 
 LDFLAGS += -L$(IAPETUS_LIBDIR) -L$(NEWLIB_LIBDIR)
 
-SRCS := init.c fade.c satisfier.c syscall.c jhloader.c test.c menu.c
+SRCS := init.c fade.c satisfier.c syscall.c jhloader.c test.c menu.c cdparse.c
 OBJS := $(addprefix out/,$(SRCS:.c=.o))
 
 out/menu.bin: ip.bin out/menu_code.bin

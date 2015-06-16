@@ -36,6 +36,21 @@ typedef enum {
 #define C_SEEK_SET  0
 #define C_SEEK_CUR  1
 #define C_SEEK_END  2
+
+// CD image descriptor
+typedef struct {
+    uint8_t number;              // track number, 1-99. 100, 101, 102 correspond to 0xa0, 0xa1, 0xa2 entries.
+    uint32_t toc_ent;           // TOC entry as read by Saturn. FAD, addr, ctrl.
+    uint16_t pregap;            // sectors of pregap (usually 150 or 0, first track must be 150)
+    uint32_t file_offset;       // byte offset in track file of start of track data
+    uint8_t file_secsize;       // sector size (enum)
+    uint8_t namelen;           // length of following name (no terminating null)
+    char name[];
+} __attribute__((packed)) satisfier_trackdesc_t;
+
+#define SEC_2048    0
+#define SEC_2352    1
+#define SEC_2448    2
 // }}}
 
 

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "satisfier.h"
 #include <string.h>
+#include "cdparse.h"
 
 void test_file_io(void) {
     // hacky file testing.
@@ -140,7 +141,13 @@ void test_menu(void) {
             name = strdup(list[entry].name);
         free_list(list, nents);
 
-        if (name)
-            s_emulate(name);
+        if (name) {
+            dprintf("Loading ISO: '%s'\n", name);
+            int ret = load_iso(name);
+            if (!ret)
+                s_emulate("out.desc");
+            else
+                s_emulate(name);
+        }
     }
 }
