@@ -130,4 +130,5 @@ int s_mode(int mode);
 #define S_MODE_CDROM    0
 #define S_MODE_USBFS    1
 
-#define DBG(...) do { printf(__VA_ARGS__); fflush(stdout); } while(0)
+#include <unistd.h>
+#define dprintf(...) do { printf(__VA_ARGS__); fflush(stdout); fsync(fileno(stdout)); } while(0)
