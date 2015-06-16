@@ -214,7 +214,7 @@ static int LoadBinCue(const char *cuefilename, FILE *iso_file)
          if (fscanf(iso_file, "%d:%d:%d\r\n", &min, &sec, &frame) == EOF)
             break;
 
-         pregap += MSF_TO_FAD(min, sec, frame); // XXX really += ?
+         trk[track_num-1].pregap = MSF_TO_FAD(min, sec, frame);
       }
       else if (strncmp(temp_buffer, "POSTGAP", 7) == 0)
       {
@@ -229,6 +229,7 @@ static int LoadBinCue(const char *cuefilename, FILE *iso_file)
       }
    }
 
+   trk[0].pregap = 150;
    trk[track_num].file_offset = 0;
    trk[track_num].fad_start = 0xFFFFFFFF;
 
