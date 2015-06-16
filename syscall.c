@@ -78,7 +78,7 @@ int _getpid(void) {
 }
 
 int _isatty(int file) {
-    return 0;
+    return file < 3;
 }
 
 int _link(char *old, char *new) {
