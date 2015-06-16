@@ -202,7 +202,7 @@ int _stat(const char *file, struct stat *st) {
 clock_t times(struct tms *buf) {
     return -1;
 }
-int unlink(char *name) {
+int unlink(const char *name) {
     return set_errno(s_unlink(name));
 }
 int wait(int *status) {
