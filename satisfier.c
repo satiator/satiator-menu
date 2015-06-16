@@ -236,6 +236,7 @@ int s_mode(int mode) {
     } else {
         cmd_t cmd = {0xe000, 0x0000, 0x00c1, 0x05e7};
         exec_cmd(cmd, HIRQ_EFLS);
+        cd_stop_drive();
     }
     cur_mode = mode;
     return 0;
