@@ -222,11 +222,17 @@ int s_getcwd(char *filename, int buflen) {
 // System API {{{
 static int cur_mode = S_MODE_CDROM;
 int s_mode(int mode) {
-    if (mode != cur_mode) {
+    if (mode == cur_mode)
+        return 0;
+
+    if (mode == S_MODE_CDROM) {
         cmd_t cmd = {0x9300, 1, 0, 0};
-        exec_cmd(cmd, 0);
-        cur_mode = mode;
+        exec_cmd(cmd, HIRQ_MPED);
+    } else {
+        cmd_t cmd = {0xe000, 0x0000, 0x00c1, 0x05e7};
+        exec_cmd(cmd, HIRQ_EFLS);
     }
+    cur_mode = mode;
     return 0;
 }
 
