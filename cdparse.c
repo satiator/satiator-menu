@@ -136,12 +136,14 @@ static int LoadBinCue(const char *cuefilename, FILE *iso_file)
    char *temp_buffer, *temp_buffer2;
    unsigned int track_num;
    unsigned int indexnum, min, sec, frame;
-   unsigned int pregap=0;
+   unsigned int pregap=0, index0time;
    char *p, *p2;
    track_info_struct trk[100];
    int file_size;
    int i;
    FILE * bin_file;
+
+   memset(trk, 0, sizeof(trk));
 
    disc.session_num = 1;
    disc.session = malloc(sizeof(session_info_struct) * disc.session_num);
@@ -180,6 +182,8 @@ static int LoadBinCue(const char *cuefilename, FILE *iso_file)
          if (fscanf(iso_file, "%d %[^\r\n]\r\n", &track_num, temp_buffer) == EOF)
             break;
 
+         index0time = 0;
+
          if (strncmp(temp_buffer, "MODE1", 5) == 0 ||
             strncmp(temp_buffer, "MODE2", 5) == 0)
          {
@@ -201,12 +205,23 @@ static int LoadBinCue(const char *cuefilename, FILE *iso_file)
          if (fscanf(iso_file, "%d %d:%d:%d\r\n", &indexnum, &min, &sec, &frame) == EOF)
             break;
 
+         if (indexnum == 0)
+         {
+            index0time = MSF_TO_FAD(min, sec, frame);
+         }
+
          if (indexnum == 1)
          {
             // Update toc entry
-            trk[track_num-1].fad_start = (MSF_TO_FAD(min, sec, frame) + pregap + 150);
             trk[track_num-1].file_offset = MSF_TO_FAD(min, sec, frame) * trk[track_num-1].sector_size;
-            trk[track_num-1].pregap = pregap;
+
+            if (index0time) {
+               // we treat index0 as pregap
+               trk[track_num-1].pregap += MSF_TO_FAD(min, sec, frame) - index0time;
+            }
+            trk[track_num-1].fad_start = MSF_TO_FAD(min, sec, frame) + 150;
+            trk[track_num-1].file_offset = (trk[track_num-1].fad_start - 150) * trk[track_num-1].sector_size;
+
          }
       }
       else if (strncmp(temp_buffer, "PREGAP", 6) == 0)
