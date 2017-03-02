@@ -77,7 +77,11 @@ int menu_picklist(file_ent *entries, int n_entries, char *caption, font_struct *
                 break;
             if (entry == selected)
                 vdp_print_text(font, 16, draw_base_y + font->height*i, 0x10, ">");
-            vdp_print_text(font, 32, draw_base_y + font->height*i, 0x10, entries[entry].name);
+
+            // truncate name so as not to overrun screen
+            char namebuf[n_cols];
+            strncpy(namebuf, entries[entry].name, sizeof(namebuf));
+            vdp_print_text(font, 32, draw_base_y + font->height*i, 0x10, namebuf);
         }
         if (scrollbase > 0)
             vdp_print_text(font, width*3/4, draw_base_y-4, 0x10, "^");
