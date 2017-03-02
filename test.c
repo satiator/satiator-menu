@@ -84,6 +84,12 @@ static file_ent * list_files(const char *dir, int *entries) {
             list[nfiles].name[len+1] = 0;
             list[nfiles].isdir = 1;
         } else {
+            if (len < 4)
+                continue;
+            if (strcmp(&st->name[len-4], ".cue") &&
+                strcmp(&st->name[len-4], ".iso"))
+                continue;
+
             list[nfiles].name = strdup(st->name);
             list[nfiles].isdir = 0;
         }
