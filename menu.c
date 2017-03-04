@@ -62,6 +62,7 @@ int menu_picklist(file_ent *entries, int n_entries, char *caption, font_struct *
     int scrollbase = 0;
     int draw_base_y = 32;   // ?
     int n_rows = (height - draw_base_y - 32) / font->height;
+    int n_cols = (width - 64) / font->width;
 
     gui_window_draw(8, 8, width-16, height-16, TRUE, 0, RGB16(26, 26, 25) | 0x8000);
     for(;;) {
