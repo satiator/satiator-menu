@@ -34,8 +34,8 @@ out/menu.bin: ip.bin out/menu_code.bin
 out/menu_code.bin: out/menu.elf
 	$(OBJCOPY) -O binary $< $@
 
-out/menu.elf: ldscript.ld $(OBJS) $(IAPETUS_LIBDIR)/libiapetus.a $(NEWLIB_LIBDIR)/libc-nosys.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -T ldscript.ld -Wl,-Map=out/menu.map $(OBJS) -liapetus -lc-nosys -lgcc
+out/menu.elf: menu.ld $(OBJS) $(IAPETUS_LIBDIR)/libiapetus.a $(NEWLIB_LIBDIR)/libc-nosys.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -T menu.ld -Wl,-Map=out/menu.map $(OBJS) -liapetus -lc-nosys -lgcc
 
 out/%.o: %.c out/.dir_exists
 	$(CC) $(CFLAGS) -c $< -o $@
