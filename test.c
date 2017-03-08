@@ -136,13 +136,13 @@ void test_menu(void) {
         file_ent *list = list_files(".", &nents);
         sort_list(list, nents);
         char namebuf[256], pathbuf[256];
-        strcpy(namebuf, "Satisfier - ");
+        strcpy(namebuf, "Satiator - ");
         s_getcwd(pathbuf, sizeof(pathbuf));
         strcat(namebuf, pathbuf);
         int entry = menu_picklist(list, nents, namebuf, NULL);
         if (entry == -1)
             s_chdir("..");
-        if (list[entry].isdir)
+        else if (list[entry].isdir)
             s_chdir(list[entry].name);
         else
             name = strdup(list[entry].name);
@@ -155,6 +155,7 @@ void test_menu(void) {
             if (!ret)
                 s_emulate("stubloader.desc");
             free(name);
+            name = NULL;
         }
     }
 }
