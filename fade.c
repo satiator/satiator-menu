@@ -6,23 +6,21 @@
 
 #include <iapetus.h>
 
-static volatile int fadeval;
+void fadeout(int step) {
+    int fadeval = 0x1ff;
 
-static void fadeisr(void) {
-    fadeval -= 10;
-    if (fadeval < 0x100)
-        fadeval = 0x100;
-    
-    VDP2_REG_COAR = fadeval;
-    VDP2_REG_COAG = fadeval;
-    VDP2_REG_COAB = fadeval;
-}
+    while (fadeval > 0x100) {
+        while(!(VDP2_REG_TVSTAT & 8));
+        fadeval -= step;
+        if (fadeval < 0x100)
+            fadeval = 0x100;
 
-void fadeout(void) {
-    fadeval = 0x1ff;
-    bios_change_scu_interrupt_mask(0xffffff, MASK_VBLANKIN);
-    bios_set_scu_interrupt(0x40, fadeisr);
-    bios_change_scu_interrupt_mask(~MASK_VBLANKIN, 0);
-    while (fadeval > 0x100);
-    bios_change_scu_interrupt_mask(0xffffff, MASK_VBLANKIN);
+        VDP2_REG_COAR = fadeval;
+        VDP2_REG_COAG = fadeval;
+        VDP2_REG_COAB = fadeval;
+
+        VDP2_REG_CLOFEN = 0xffff;
+
+        while(VDP2_REG_TVSTAT & 8);
+    }
 }

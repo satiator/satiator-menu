@@ -127,6 +127,7 @@ static void free_list(file_ent *list, int n_entries) {
         free(list[i].name);
     free(list);
 }
+void fadeout(int arg);
 void test_menu(void) {
     menu_init();
     char *name = NULL;
@@ -150,6 +151,7 @@ void test_menu(void) {
         if (name) {
             dprintf("Loading ISO: '%s'\n", name);
             int ret = load_iso(name);
+            fadeout(0x20);
             if (!ret)
                 s_emulate("out.desc");
             else

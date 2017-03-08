@@ -33,7 +33,7 @@ void sysinit(void) {
 }
 
 // wipe off the menu neatly before we come up
-void fadeout(void);
+void fadeout(int step);
 
 void test_file_io(void);
 void test_stdio(void);
@@ -49,7 +49,7 @@ void start(void) {
     bios_get_mpeg_rom(2, nsec, (u32)&_load_start);
     memset(&_load_end, 0, &_bss_end-&_load_end);
 
-    fadeout();
+    fadeout(0x10);
     sysinit();
 
     // enable Satisfier API
