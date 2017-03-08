@@ -15,7 +15,7 @@ NEWLIB_SRC ?= $(shell pwd)/../newlib-2.2.0.20150423
 CC = $(CROSS_COMPILE)gcc
 OBJCOPY = $(CROSS_COMPILE)objcopy
 
-CFLAGS ?= -O0 -m2 -nostdlib -Wall -ggdb3
+CFLAGS ?= -O2 -m2 -nostdlib -Wall -ggdb3 -ffunction-sections -fdata-sections
 CFLAGS += -I$(IAPETUS_SRC)/src
 
 IAPETUS_LIBDIR=iapetus-build/src
@@ -23,7 +23,7 @@ IAPETUS_LIBDIR=iapetus-build/src
 NEWLIB_ARCH=$(patsubst %-,%,$(basename $(CROSS_COMPILE)))
 NEWLIB_LIBDIR=newlib-build/prefix/$(NEWLIB_ARCH)/lib
 
-LDFLAGS += -L$(IAPETUS_LIBDIR) -L$(NEWLIB_LIBDIR)
+LDFLAGS += -L$(IAPETUS_LIBDIR) -L$(NEWLIB_LIBDIR) -Wl,--gc-sections
 
 SRCS := init.c fade.c satisfier.c syscall.c jhloader.c test.c menu.c cdparse.c
 OBJS := $(addprefix out/,$(SRCS:.c=.o))

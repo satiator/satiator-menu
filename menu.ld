@@ -21,11 +21,14 @@ SECTIONS {
         *ashiftrt.o(.text); /* necessary for the BIOS load */
 
         *(.text);
+        *(.text.*);
         *(.rodata);
         *(.rodata.*);
         *(.data);
+        *(.data.*);
         __load_end = .;
         *(.bss);
+        *(.bss.*);
         *(COMMON);
         __bss_end = .;
         . = ALIGN(4);
