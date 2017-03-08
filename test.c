@@ -153,9 +153,7 @@ void test_menu(void) {
             int ret = load_iso(name);
             fadeout(0x20);
             if (!ret)
-                s_emulate("out.desc");
-            else
-                s_emulate(name);
+                s_emulate("stubloader.desc");
             free(name);
         }
     }
