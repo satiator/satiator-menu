@@ -120,9 +120,6 @@ move:
     }
 
 out:
-    vdp_clear_screen(font);
-    vdp_start_draw_list();
-    vdp_end_draw_list();
     font->transparent = old_transparent;
     return selected;
 }
