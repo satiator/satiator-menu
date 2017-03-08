@@ -39,7 +39,7 @@ void test_file_io(void);
 void test_stdio(void);
 void test_menu(void);
 
-extern char _load_start, _load_end, _bss_end;
+extern char _load_start, _load_end, _bss_end, _free_ram_end;
 
 void start(void) __attribute__((section(".start")));
 void start(void) {
@@ -47,7 +47,13 @@ void start(void) {
     // lot and zero BSS
     int nsec = ((&_load_end-&_load_start-1) / 0x800) + 1;
     bios_get_mpeg_rom(2, nsec, (u32)&_load_start);
-    memset(&_load_end, 0, &_bss_end-&_load_end);
+    memset(&_load_end, 0, &_free_ram_end - &_load_end);
+
+    // move stack pointer to LoRAM because HiRAM will get clobbered if a load fails
+    asm volatile (
+        "mov %0, r15"
+        : : "r" (&_free_ram_end)
+    );
 
     fadeout(0x10);
     sysinit();
