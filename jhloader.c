@@ -19,7 +19,7 @@ static int emulate_bios_loadcd_init(void) {
 }
 
 static struct region_s {
-   char id;
+   uint8_t id;
    const char *key;
 } regions[] = {
    {1,   "JAPAN"},
@@ -34,7 +34,15 @@ static struct region_s {
 };
 
 static const char *get_region_string(void) {
-   char region = *(volatile char*)0x20100033;
+   // fetch SMPC region byte
+   smpc_wait_till_ready();
+   SMPC_REG_IREG(0) = 0x01;
+   SMPC_REG_IREG(1) = 0x00;
+   SMPC_REG_IREG(2) = 0xf0;
+   smpc_issue_command(SMPC_CMD_INTBACK);
+   smpc_wait_till_ready();
+
+   uint8_t region = SMPC_REG_OREG(9);
    struct region_s *r;
    for (r=regions; r->id; r++)
       if (r->id == region)
