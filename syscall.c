@@ -12,6 +12,7 @@
 #include <sys/time.h>
 #include <stdio.h>
 #include "satisfier.h"
+#include <iapetus.h>
 
 #undef errno
 extern int errno;   // yuck but okay
@@ -153,7 +154,20 @@ int _read(int file, char *ptr, int len) {
     }
     return nread;
 }
+
+int syscall_enable_stdout_ud = 0;
+
 int _write(int file, char *ptr, int len) {
+    if (syscall_enable_stdout_ud && file == STDOUT_FILENO) {
+        size_t i = len;
+        while (i--) {
+            if (*ptr == '\n')
+                ud_send_byte('\r');
+            ud_send_byte(*ptr++);
+        }
+        return len;
+    }
+
     if (file < 3)
         return -1;
 

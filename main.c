@@ -4,6 +4,7 @@
 #include <string.h>
 #include "cdparse.h"
 #include "fade.h"
+#include "syscall.h"
 #include "gmenu.h"
 
 static file_ent * list_files(const char *dir, int *entries) {
@@ -75,6 +76,10 @@ static void free_list(file_ent *list, int n_entries) {
 
 void main_menu(void) {
     menu_init();
+
+    if (ud_detect() == IAPETUS_ERR_OK)
+        syscall_enable_stdout_ud = 1;
+
     char *name = NULL;
     for(;;) {
         int nents;
@@ -94,7 +99,7 @@ void main_menu(void) {
         free_list(list, nents);
 
         if (name) {
-            dprintf("Loading ISO: '%s'\n", name);
+            dbgprintf("Loading ISO: '%s'\n", name);
             int ret = load_iso(name);
             fadeout(0x20);
             if (!ret) {

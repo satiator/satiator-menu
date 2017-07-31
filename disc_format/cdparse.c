@@ -538,7 +538,7 @@ static int LoadMDS(const char *mds_filename, FILE *iso_file)
 static int LoadISO(const char *isoname, FILE *iso_file)
 {
    track_info_struct *track;
-   dprintf("LoadISO\n");
+   dbgprintf("LoadISO\n");
 
    disc.session_num = 1;
    disc.session = malloc(sizeof(session_info_struct) * disc.session_num);
@@ -579,7 +579,7 @@ static int LoadISO(const char *isoname, FILE *iso_file)
       return -1;
    }
 
-   dprintf("LoadISO done\n");
+   dbgprintf("LoadISO done\n");
    disc.session[0].fad_end = track->fad_end = disc.session[0].fad_start + (track->file_size / track->sector_size);
 
    return 0;
@@ -592,12 +592,12 @@ int BuildDesc()
    FILE *descfile = fopen("out.desc", "wb");
    satisfier_trackdesc_t desc;
    session_info_struct *session=&disc.session[0];
-   dprintf("BuildDesc\n");
+   dbgprintf("BuildDesc\n");
 
    int i;
    for (i = 0; i < session->track_num; i++)
    {
-      dprintf("  track %d\n", i+1);
+      dbgprintf("  track %d\n", i+1);
       memset(&desc, 0, sizeof(desc));
       track_info_struct *track=&disc.session[0].track[i];
       desc.number = i+1;
@@ -641,9 +641,9 @@ int BuildDesc()
    memset(&desc, 0, sizeof(desc));  // terminator
    fwrite(&desc, offsetof(satisfier_trackdesc_t, name), 1, descfile);
 
-   dprintf("Closing descfile\n");
+   dbgprintf("Closing descfile\n");
    fclose(descfile);
-   dprintf("Done with descfile\n");
+   dbgprintf("Done with descfile\n");
 
    return 0;
 }
@@ -656,10 +656,10 @@ static int ISOCDInit(const char * iso) {
    int ret;
    FILE *iso_file;
 
-   dprintf("ISOCDInit(\"%s\")\n", iso);
+   dbgprintf("ISOCDInit(\"%s\")\n", iso);
 
    memset(&disc, 0, sizeof(disc));
-   dprintf("cleared disc struct\n");
+   dbgprintf("cleared disc struct\n");
 
    if (!iso)
       return -1;
@@ -669,13 +669,13 @@ static int ISOCDInit(const char * iso) {
       YabSetError(YAB_ERR_FILENOTFOUND, "File not found");
       return -1;
    }
-   dprintf("opened input\n");
+   dbgprintf("opened input\n");
 
    fread((void *)header, 1, 6, iso_file);
-   dprintf("read header\n");
+   dbgprintf("read header\n");
    ext = strrchr(iso, '.');
    
-   dprintf("ext = \"%s\"\n", ext);
+   dbgprintf("ext = \"%s\"\n", ext);
 
    // Figure out what kind of image format we're dealing with
    if (stricmp(ext, ".CUE") == 0 && strncmp(header, "FILE \"", 6) == 0)
@@ -708,7 +708,7 @@ static int ISOCDInit(const char * iso) {
    }   
 
    BuildDesc();
-   dprintf("load complete\n");
+   dbgprintf("load complete\n");
    return 0;
 }
 

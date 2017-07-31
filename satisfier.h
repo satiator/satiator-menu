@@ -131,4 +131,4 @@ int s_mode(int mode);
 #define S_MODE_USBFS    1
 
 #include <unistd.h>
-#define dprintf(...) do { printf(__VA_ARGS__); fflush(stdout); fsync(fileno(stdout)); } while(0)
+#define dbgprintf(...) printf(__VA_ARGS__)
