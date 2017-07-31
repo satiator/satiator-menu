@@ -18,6 +18,7 @@ OBJCOPY = $(CROSS_COMPILE)objcopy
 
 CFLAGS ?= -O2 -m2 -nostdlib -Wall -ggdb3 -ffunction-sections -fdata-sections
 CFLAGS += -I$(IAPETUS_SRC)/src
+CFLAGS += -I.
 
 IAPETUS_LIBDIR=iapetus-build/src
 
@@ -29,8 +30,8 @@ LDFLAGS += -L$(IAPETUS_LIBDIR) -L$(NEWLIB_LIBDIR) -Wl,--gc-sections
 SRCS := init.c fade.c satisfier.c syscall.c jhloader.c test.c menu.c cdparse.c
 OBJS := $(addprefix out/,$(SRCS:.c=.o))
 
-STUBSRCS := stubloader-start.s stubloader.c satisfier.c syscall.c
-STUBOBJS := $(addprefix out/,$(filter %.o,$(STUBSRCS:.c=.o) $(STUBSRCS:.s=.o)))
+STUBSRCS := stubloader/stubloader-start.s stubloader/stubloader.c satisfier.c syscall.c
+STUBOBJS := $(addprefix out/,$(notdir $(filter %.o,$(STUBSRCS:.c=.o) $(STUBSRCS:.s=.o))))
 
 default: out/menu.bin out/stubloader.bin out/stubloader.iso
 
@@ -40,7 +41,7 @@ out/stubloader.iso: out/stubloader.bin
 out/menu.bin: ip.bin out/menu_code.bin
 	cat $^ > $@
 
-out/stubloader.bin: stubloader-ip.bin out/stubloader_code.bin
+out/stubloader.bin: stubloader/stubloader-ip.bin out/stubloader_code.bin
 	cat $^ > $@
 
 out/%_code.bin: out/%.elf
@@ -49,13 +50,19 @@ out/%_code.bin: out/%.elf
 out/menu.elf: menu.ld $(OBJS) $(IAPETUS_LIBDIR)/libiapetus.a $(NEWLIB_LIBDIR)/libc-nosys.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -T menu.ld -Wl,-Map=out/menu.map $(OBJS) -liapetus -lc-nosys -lgcc
 
-out/stubloader.elf: stubloader.ld $(STUBOBJS) $(IAPETUS_LIBDIR)/libiapetus.a $(NEWLIB_LIBDIR)/libc-nosys.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -T stubloader.ld -Wl,-Map=out/stubloader.map $(STUBOBJS) -liapetus -lc-nosys -lgcc
+out/stubloader.elf: stubloader/stubloader.ld $(STUBOBJS) $(IAPETUS_LIBDIR)/libiapetus.a $(NEWLIB_LIBDIR)/libc-nosys.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -T stubloader/stubloader.ld -Wl,-Map=out/stubloader.map $(STUBOBJS) -liapetus -lc-nosys -lgcc
 
 out/%.o: %.c out/.dir_exists
 	$(CC) $(CFLAGS) -c $< -o $@
 
 out/%.o: %.s out/.dir_exists
+	$(AS) $< -o $@
+
+out/%.o: stubloader/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+out/%.o: stubloader/%.s
 	$(AS) $< -o $@
 
 out/.dir_exists:
