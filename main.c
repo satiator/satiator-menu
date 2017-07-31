@@ -73,7 +73,7 @@ static void free_list(file_ent *list, int n_entries) {
     free(list);
 }
 
-void test_menu(void) {
+void main_menu(void) {
     menu_init();
     char *name = NULL;
     for(;;) {

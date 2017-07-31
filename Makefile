@@ -27,7 +27,7 @@ NEWLIB_LIBDIR=newlib-build/prefix/$(NEWLIB_ARCH)/lib
 
 LDFLAGS += -L$(IAPETUS_LIBDIR) -L$(NEWLIB_LIBDIR) -Wl,--gc-sections
 
-SRCS := init.c gui/fade.c satisfier.c syscall.c jhloader.c test.c gui/gmenu.c disc_format/cdparse.c
+SRCS := init.c gui/fade.c satisfier.c syscall.c jhloader.c main.c gui/gmenu.c disc_format/cdparse.c
 OBJS := $(addprefix out/,$(notdir $(SRCS:.c=.o)))
 
 STUBSRCS := stubloader/stubloader-start.s stubloader/stubloader.c satisfier.c syscall.c

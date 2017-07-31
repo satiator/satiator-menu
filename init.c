@@ -33,10 +33,6 @@ void sysinit(void) {
       interrupt_set_level_mask(0x7);
 }
 
-void test_file_io(void);
-void test_stdio(void);
-void test_menu(void);
-
 extern char _load_start, _load_end, _bss_end, _free_ram_end;
 
 void start(void) __attribute__((section(".start")));
@@ -61,10 +57,5 @@ void start(void) {
 
     // debugging: log to a file
     stdout = fopen("debug.log", "w");
-
-    test_menu();
-    for(;;);
-    s_emulate("test.desc");
-
-    for(;;);
+    main_menu();    // does not return
 }
