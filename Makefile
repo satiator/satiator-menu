@@ -27,8 +27,8 @@ NEWLIB_LIBDIR=newlib-build/prefix/$(NEWLIB_ARCH)/lib
 
 LDFLAGS += -L$(IAPETUS_LIBDIR) -L$(NEWLIB_LIBDIR) -Wl,--gc-sections
 
-SRCS := init.c fade.c satisfier.c syscall.c jhloader.c test.c menu.c cdparse.c
-OBJS := $(addprefix out/,$(SRCS:.c=.o))
+SRCS := init.c fade.c satisfier.c syscall.c jhloader.c test.c menu.c disc_format/cdparse.c
+OBJS := $(addprefix out/,$(notdir $(SRCS:.c=.o)))
 
 STUBSRCS := stubloader/stubloader-start.s stubloader/stubloader.c satisfier.c syscall.c
 STUBOBJS := $(addprefix out/,$(notdir $(filter %.o,$(STUBSRCS:.c=.o) $(STUBSRCS:.s=.o))))
@@ -58,6 +58,9 @@ out/%.o: %.c out/.dir_exists
 
 out/%.o: %.s out/.dir_exists
 	$(AS) $< -o $@
+
+out/%.o: disc_format/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 out/%.o: stubloader/%.c
 	$(CC) $(CFLAGS) -c $< -o $@

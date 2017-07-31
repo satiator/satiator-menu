@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
-#include "satisfier.h"
+#include <satisfier.h>
 
 typedef  uint8_t   u8;
 typedef  uint16_t  u16;

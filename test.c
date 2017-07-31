@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "satisfier.h"
 #include <string.h>
-#include "cdparse.h"
+#include "disc_format/cdparse.h"
 
 void test_file_io(void) {
     // hacky file testing.
