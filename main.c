@@ -6,6 +6,7 @@
 #include "fade.h"
 #include "syscall.h"
 #include "gmenu.h"
+#include "jhloader.h"
 
 static file_ent * list_files(const char *dir, int *entries) {
     *entries = 0;
@@ -109,7 +110,22 @@ void main_menu(void) {
                 s_mode(S_MODE_CDROM);
                 ret = boot_disc();
                 s_mode(S_MODE_USBFS);   // failed, restore order
-                // XXX error handling
+                dbgprintf("boot_disc error: %d\n", ret);
+                fadein(0x20);
+
+                const char *error = "Unknown error";
+                switch(ret) {
+                    case BOOT_BAD_HEADER:
+                        error = "Bad disc header. Bad image?";
+                        break;
+                    case BOOT_BAD_REGION:
+                        error = "Wrong region.";
+                        break;
+                    case BOOT_BAD_SECURITY_CODE:
+                        error = "Bad security code. Bad image?";
+                        break;
+                }
+                menu_error("Boot failed!", error);
             }
 
             free(name);
