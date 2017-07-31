@@ -248,11 +248,6 @@ int s_emulate(char *filename) {
     int len = strlen(filename);
     buffer_write(filename, len);
     simplecall(c_emulate, 0, 0, len);
-    while (is_cd_present());
-    while (!is_cd_present());
-    s_mode(S_MODE_CDROM);
-    int ret = boot_disc();
-    s_mode(S_MODE_USBFS);
-    return ret;
+    return 0;
 }
 // }}}

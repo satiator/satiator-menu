@@ -96,8 +96,16 @@ void test_menu(void) {
             dprintf("Loading ISO: '%s'\n", name);
             int ret = load_iso(name);
             fadeout(0x20);
-            if (!ret)
-                s_emulate("stubloader.desc");
+            if (!ret) {
+                s_emulate("out.desc");
+                while (is_cd_present());
+                while (!is_cd_present());
+                s_mode(S_MODE_CDROM);
+                ret = boot_disc();
+                s_mode(S_MODE_USBFS);   // failed, restore order
+                // XXX error handling
+            }
+
             free(name);
             name = NULL;
         }
