@@ -7,6 +7,7 @@
 #include <iapetus.h>
 #include "satisfier.h"
 #include <string.h>
+#include "fade.h"
 
 // Reset everything we can before loading the menu.
 void sysinit(void) {
@@ -31,9 +32,6 @@ void sysinit(void) {
    if (interrupt_get_level_mask() > 0x7)
       interrupt_set_level_mask(0x7);
 }
-
-// wipe off the menu neatly before we come up
-void fadeout(int step);
 
 void test_file_io(void);
 void test_stdio(void);

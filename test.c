@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include "satisfier.h"
 #include <string.h>
-#include "disc_format/cdparse.h"
+#include "cdparse.h"
+#include "fade.h"
+#include "gmenu.h"
 
-#include "menu.h"
 static file_ent * list_files(const char *dir, int *entries) {
     *entries = 0;
     if (s_opendir(dir))
@@ -71,7 +72,7 @@ static void free_list(file_ent *list, int n_entries) {
         free(list[i].name);
     free(list);
 }
-void fadeout(int arg);
+
 void test_menu(void) {
     menu_init();
     char *name = NULL;

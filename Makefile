@@ -18,7 +18,7 @@ OBJCOPY = $(CROSS_COMPILE)objcopy
 
 CFLAGS ?= -O2 -m2 -nostdlib -Wall -ggdb3 -ffunction-sections -fdata-sections
 CFLAGS += -I$(IAPETUS_SRC)/src
-CFLAGS += -I.
+CFLAGS += -I. -Idisc_format -Igui
 
 IAPETUS_LIBDIR=iapetus-build/src
 
@@ -27,7 +27,7 @@ NEWLIB_LIBDIR=newlib-build/prefix/$(NEWLIB_ARCH)/lib
 
 LDFLAGS += -L$(IAPETUS_LIBDIR) -L$(NEWLIB_LIBDIR) -Wl,--gc-sections
 
-SRCS := init.c fade.c satisfier.c syscall.c jhloader.c test.c menu.c disc_format/cdparse.c
+SRCS := init.c gui/fade.c satisfier.c syscall.c jhloader.c test.c gui/gmenu.c disc_format/cdparse.c
 OBJS := $(addprefix out/,$(notdir $(SRCS:.c=.o)))
 
 STUBSRCS := stubloader/stubloader-start.s stubloader/stubloader.c satisfier.c syscall.c
@@ -60,6 +60,9 @@ out/%.o: %.s out/.dir_exists
 	$(AS) $< -o $@
 
 out/%.o: disc_format/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+out/%.o: gui/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 out/%.o: stubloader/%.c

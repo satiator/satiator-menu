@@ -24,3 +24,22 @@ void fadeout(int step) {
         while(VDP2_REG_TVSTAT & 8);
     }
 }
+
+void fadein(int step) {
+    int fadeval = 0x100;
+
+    while (fadeval < 0x1ff) {
+        while(!(VDP2_REG_TVSTAT & 8));
+        fadeval += step;
+        if (fadeval > 0x1ff)
+            fadeval = 0x1ff;
+
+        VDP2_REG_COAR = fadeval;
+        VDP2_REG_COAG = fadeval;
+        VDP2_REG_COAB = fadeval;
+
+        VDP2_REG_CLOFEN = 0xffff;
+
+        while(VDP2_REG_TVSTAT & 8);
+    }
+}
