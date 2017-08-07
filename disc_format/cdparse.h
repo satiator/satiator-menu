@@ -5,5 +5,6 @@
  * file, you can obtain one at http://mozilla.org/MPL/2.0/. */
 
 extern const char *cdparse_error_string;
-// temporary API, just writes to "out.desc"
-int load_iso(const char *filename);
+int image2desc(const char *infile, const char *outfile);
+
+int cue2desc(const char *cue_file, const char *desc_file);

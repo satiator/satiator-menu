@@ -101,7 +101,12 @@ void main_menu(void) {
 
         if (name) {
             dbgprintf("Loading ISO: '%s'\n", name);
-            int ret = load_iso(name);
+            int ret = image2desc(name, "out.desc");
+            if (ret) {
+                menu_error("Disc load failed!", cdparse_error_string ? cdparse_error_string : "Unknown error");
+                goto again;
+            }
+
             fadeout(0x20);
             if (!ret) {
                 s_emulate("out.desc");
@@ -128,6 +133,7 @@ void main_menu(void) {
                 menu_error("Boot failed!", error);
             }
 
+again:
             free(name);
             name = NULL;
         }
