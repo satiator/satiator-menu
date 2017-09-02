@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <ctype.h>
 #include <alloca.h>
+#include <endian.h>
 #include "cdparse.h"
 
 
@@ -96,8 +97,10 @@ static cue2desc_error_t write_desc_file(const char *filename, segment_t *segment
         fwrite(filenames[i], namelen, 1, out);
     }
 
+    // careful here: Saturn is big-endian but we have to write everything little-endian
+
     fseek(out, 0, SEEK_SET);
-    uint16_t h_nseg = nseg;
+    uint16_t h_nseg = htole16(nseg);
     fwrite(&h_nseg, 2, 1, out);
 
     for (int i=0; i<nseg; i++) {
@@ -108,13 +111,13 @@ static cue2desc_error_t write_desc_file(const char *filename, segment_t *segment
         desc.track = seg.track;
         desc.index = seg.index;
         desc.q_mode = seg.q_mode;
-        desc.start = seg.start;
-        desc.length = seg.length;
+        desc.start = htole32(seg.start);
+        desc.length = htole32(seg.length);
 
         if (seg.filename_index >= 0) {
-            desc.secsize = seg.secsize;
-            desc.filename_offset = filename_offsets[seg.filename_index];
-            desc.file_offset = seg.file_offset;
+            desc.secsize = htole16(seg.secsize);
+            desc.filename_offset = htole32(filename_offsets[seg.filename_index]);
+            desc.file_offset = htole32(seg.file_offset);
         }
 
         fwrite(&desc, sizeof(desc), 1, out);
