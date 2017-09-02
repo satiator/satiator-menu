@@ -185,7 +185,7 @@ static cue2desc_error_t handle_file(char *params) {
 
     struct stat st;
     int ret = stat(filename, &st);
-    if (ret == -1) {
+    if (ret < 0) {
         error("Could not stat track file");
         return e_bad_track_file;
     }

@@ -215,7 +215,17 @@ caddr_t _sbrk(int incr) {
 }
 
 int _stat(const char *file, struct stat *st) {
-    return -1;  // just use s_stat
+    char statbuf[280];
+    s_stat_t *stat = (s_stat_t*)statbuf;
+    int len = s_stat(file, stat, sizeof(statbuf) - 1);
+    if (len < 0)
+        return -1;
+
+    if (st) {
+        st->st_size = stat->size;
+        // converting date is too hard. use s_stat directly please.
+    }
+    return 0;
 }
 clock_t times(struct tms *buf) {
     return -1;
