@@ -117,7 +117,7 @@ void main_menu(void) {
                 s_mode(S_MODE_CDROM);
                 ret = boot_disc();
                 s_mode(S_MODE_USBFS);   // failed, restore order
-                dbgprintf("boot_disc error: %d\n", ret);
+                s_emulate("");  // close the old file
                 fadein(0x20);
 
                 const char *error = "Unknown error";
