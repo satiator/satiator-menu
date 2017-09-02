@@ -78,8 +78,10 @@ static void free_list(file_ent *list, int n_entries) {
 void main_menu(void) {
     menu_init();
 
+#ifdef DEBUG
     if (ud_detect() == IAPETUS_ERR_OK)
         syscall_enable_stdout_ud = 1;
+#endif
 
     char *name = NULL;
     for(;;) {

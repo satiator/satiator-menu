@@ -5,6 +5,10 @@
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+# whether to enable debug printf()s, etc.
+# set to yes to enable
+DEBUG := yes
+
 # Set to point to your toolchain
 CROSS_COMPILE ?= sh-none-elf-
 
@@ -28,6 +32,11 @@ NEWLIB_LIBDIR=newlib-build/prefix/$(NEWLIB_ARCH)/lib
 LDFLAGS += -L$(IAPETUS_LIBDIR) -L$(NEWLIB_LIBDIR) -Wl,--gc-sections
 
 SRCS := init.c gui/fade.c satisfier.c syscall.c jhloader.c main.c gui/gmenu.c disc_format/cdparse.c disc_format/cue2desc.c
+
+ifeq ($(DEBUG), yes)
+	CFLAGS += -DDEBUG
+endif
+
 OBJS := $(addprefix out/,$(notdir $(SRCS:.c=.o)))
 
 STUBSRCS := stubloader/stubloader-start.s stubloader/stubloader.c satisfier.c syscall.c

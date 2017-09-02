@@ -155,9 +155,12 @@ int _read(int file, char *ptr, int len) {
     return nread;
 }
 
+#ifdef DEBUG
 int syscall_enable_stdout_ud = 0;
+#endif
 
 int _write(int file, char *ptr, int len) {
+#ifdef DEBUG
     if (syscall_enable_stdout_ud && file == STDOUT_FILENO) {
         size_t i = len;
         while (i--) {
@@ -167,6 +170,7 @@ int _write(int file, char *ptr, int len) {
         }
         return len;
     }
+#endif
 
     if (file < 3)
         return -1;
