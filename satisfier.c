@@ -59,7 +59,7 @@ static inline int buffer_xfer(void *buf, int len, int dir) {
 }
 
 #define buffer_read(buf, len)  buffer_xfer(buf, len, 0)
-#define buffer_write(buf, len) buffer_xfer(buf, len, 1)
+#define buffer_write(buf, len) buffer_xfer((void*)(uintptr_t)buf, len, 1)
 
 // }}}
 
@@ -95,7 +95,7 @@ static inline void set_cmd(cmd_t cmd, int op, int fd, int flags, int len) {
 // File API {{{
 // Given a filename and some FA_xxx flags, return a file descriptor
 // (or a negative error corresponding to FR_xxx)
-int s_open(char *filename, int flags) {
+int s_open(const char *filename, int flags) {
     buffer_write(filename, strlen(filename));
     simplecall(c_open, 0, flags, strlen(filename));
     return sat_result[3];   // handle
@@ -124,7 +124,7 @@ int s_read(int fd, void *buf, int len) {
 }
 
 // Write some data. Returns bytes written
-int s_write(int fd, void *buf, int len) {
+int s_write(int fd, const void *buf, int len) {
     if (len > S_MAXBUF || len < 0)
         return FR_INVALID_PARAMETER;
     buffer_write(buf, len);
@@ -148,7 +148,7 @@ int s_truncate(int fd) {
 // short.  Returns the length of the (truncated) filename.
 // If the filename is NULL, reads the next file from the
 // current directory (readdir).
-int s_stat(char *filename, s_stat_t *stat, int statsize) {
+int s_stat(const char *filename, s_stat_t *stat, int statsize) {
     int len;
     if (statsize < 9)
         return FR_INVALID_PARAMETER;
@@ -167,7 +167,7 @@ int s_stat(char *filename, s_stat_t *stat, int statsize) {
 }
 
 // Rename a file.
-int s_rename(char *old, char *new) {
+int s_rename(const char *old, const char *new) {
     // Need both names, zero separated, for the write
     char namebuf[512];  // nasty huh
     int len1 = strlen(old);
@@ -180,7 +180,7 @@ int s_rename(char *old, char *new) {
 }
 
 // Create a directory.
-int s_mkdir(char *filename) {
+int s_mkdir(const char *filename) {
     int len = strlen(filename);
     buffer_write(filename, len);
     simplecall(c_mkdir, 0, 0, len);
@@ -188,7 +188,7 @@ int s_mkdir(char *filename) {
 }
 
 // Delete a file.
-int s_unlink(char *filename) {
+int s_unlink(const char *filename) {
     int len = strlen(filename);
     buffer_write(filename, len);
     simplecall(c_unlink, 0, 0, len);
@@ -196,7 +196,7 @@ int s_unlink(char *filename) {
 }
 
 // Open a directory to read file entries.
-int s_opendir(char *filename) {
+int s_opendir(const char *filename) {
     int len = strlen(filename);
     buffer_write(filename, len);
     simplecall(c_opendir, 0, 0, len);
@@ -204,7 +204,7 @@ int s_opendir(char *filename) {
 }
 
 // Change working directory.
-int s_chdir(char *filename) {
+int s_chdir(const char *filename) {
     int len = strlen(filename);
     buffer_write(filename, len);
     simplecall(c_chdir, 0, 0, len);
@@ -244,7 +244,7 @@ int s_mode(int mode) {
 
 // Given the filename of a disc descriptor, try and boot into it.
 int boot_disc(void);
-int s_emulate(char *filename) {
+int s_emulate(const char *filename) {
     int len = strlen(filename);
     buffer_write(filename, len);
     simplecall(c_emulate, 0, 0, len);

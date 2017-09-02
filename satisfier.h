@@ -61,21 +61,21 @@ typedef struct {
     char name[];
 } __attribute__((packed)) s_stat_t;
 
-int s_open(char *filename, int flags);
+int s_open(const char *filename, int flags);
 int s_close(int fd);
 int s_seek(int fd, int offset, int whence);
 int s_read(int fd, void *buf, int len);
-int s_write(int fd, void *buf, int len);
+int s_write(int fd, const void *buf, int len);
 int s_sync(int fd);
 int s_truncate(int fd);
-int s_stat(char *filename, s_stat_t *stat, int statsize);
-int s_rename(char *old, char *new);
-int s_mkdir(char *filename);
-int s_unlink(char *filename);
-int s_opendir(char *filename);
-int s_chdir(char *filename);
+int s_stat(const char *filename, s_stat_t *stat, int statsize);
+int s_rename(const char *old, const char *new);
+int s_mkdir(const char *filename);
+int s_unlink(const char *filename);
+int s_opendir(const char *filename);
+int s_chdir(const char *filename);
 int s_getcwd(char *filename, int buflen);
-int s_emulate(char *filename);
+int s_emulate(const char *filename);
 int s_mode(int mode);
 
 #define S_MAXBUF    2048
