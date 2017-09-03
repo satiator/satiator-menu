@@ -108,7 +108,7 @@ static int emulate_bios_loadcd_read(void)
 int boot_disc(void)
 {
    int ret;
-#if 1
+#if 0
    // authentic boot
    ret = bios_loadcd_init();
    ret = bios_loadcd_read();
