@@ -75,6 +75,46 @@ static void free_list(file_ent *list, int n_entries) {
     free(list);
 }
 
+void launch_game(const char *filename) {
+    dbgprintf("Loading ISO: '%s'\n", filename);
+    int ret = image2desc(filename, "out.desc");
+    if (ret) {
+        menu_error("Disc load failed!", cdparse_error_string ? cdparse_error_string : "Unknown error");
+        return;
+    }
+
+    fadeout(0x20);
+    dbgprintf("loading stubloader.desc\n");
+    /* s_emulate("stubloader.desc"); */
+    s_emulate("out.desc");
+    dbgprintf("lid wait open...\n");
+    while (is_cd_present());
+    dbgprintf("lid wait close...\n");
+    while (!is_cd_present());
+    s_mode(S_MODE_CDROM);
+    dbgprintf("boop\n");
+    ret = boot_disc();
+
+    s_mode(S_MODE_USBFS);   // failed, restore order
+    s_emulate("");  // close the old file
+    fadein(0x20);
+
+    const char *error = "Unknown error";
+    switch(ret) {
+        case BOOT_BAD_HEADER:
+            error = "Bad disc header. Bad image?";
+            break;
+        case BOOT_BAD_REGION:
+            error = "Wrong region.";
+            break;
+        case BOOT_BAD_SECURITY_CODE:
+            error = "Bad security code. Bad image?";
+            break;
+    }
+    menu_error("Boot failed!", error);
+}
+
+
 void main_menu(void) {
     menu_init();
 
@@ -102,40 +142,7 @@ void main_menu(void) {
         free_list(list, nents);
 
         if (name) {
-            dbgprintf("Loading ISO: '%s'\n", name);
-            int ret = image2desc(name, "out.desc");
-            if (ret) {
-                menu_error("Disc load failed!", cdparse_error_string ? cdparse_error_string : "Unknown error");
-                goto again;
-            }
-
-            fadeout(0x20);
-            if (!ret) {
-                s_emulate("out.desc");
-                while (is_cd_present());
-                while (!is_cd_present());
-                s_mode(S_MODE_CDROM);
-                ret = boot_disc();
-                s_mode(S_MODE_USBFS);   // failed, restore order
-                s_emulate("");  // close the old file
-                fadein(0x20);
-
-                const char *error = "Unknown error";
-                switch(ret) {
-                    case BOOT_BAD_HEADER:
-                        error = "Bad disc header. Bad image?";
-                        break;
-                    case BOOT_BAD_REGION:
-                        error = "Wrong region.";
-                        break;
-                    case BOOT_BAD_SECURITY_CODE:
-                        error = "Bad security code. Bad image?";
-                        break;
-                }
-                menu_error("Boot failed!", error);
-            }
-
-again:
+            launch_game(name);
             free(name);
             name = NULL;
         }
