@@ -7,7 +7,9 @@
 #include <iapetus.h>
 
 void fadeout(int step) {
-    int fadeval = 0x1ff;
+    int fadeval = VDP2_REG_COAR;
+    if (!fadeval)
+        fadeval = 0x1ff;
 
     while (fadeval > 0x100) {
         while(!(VDP2_REG_TVSTAT & 8));
@@ -26,7 +28,7 @@ void fadeout(int step) {
 }
 
 void fadein(int step) {
-    int fadeval = 0x100;
+    int fadeval = VDP2_REG_COAR;
 
     while (fadeval < 0x1ff) {
         while(!(VDP2_REG_TVSTAT & 8));
