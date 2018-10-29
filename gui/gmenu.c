@@ -7,7 +7,7 @@
 #include <iapetus.h>
 #include <string.h>
 #include <stdio.h>
-#include "satisfier.h"
+#include "satiator.h"
 #include "gmenu.h"
 
 static font_struct main_font;

@@ -1,6 +1,6 @@
 #include <iapetus.h>
 #include <stdio.h>
-#include "satisfier.h"
+#include "satiator.h"
 #include <string.h>
 #include "cdparse.h"
 #include "fade.h"

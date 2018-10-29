@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include "../satisfier-types.h"
+#include "../satiator-types.h"
 
 char file_buf[256];
 char *read_file_name(FILE *fp, int offset) {

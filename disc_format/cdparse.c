@@ -13,9 +13,9 @@
 
 #ifdef TEST
     #define dbgprintf printf
-    #include "../satisfier-types.h"
+    #include "../satiator-types.h"
 #else
-    #include "satisfier.h"
+    #include "satiator.h"
 #endif
 
 const char *cdparse_error_string = NULL;

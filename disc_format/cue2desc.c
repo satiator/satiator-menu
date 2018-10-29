@@ -19,9 +19,9 @@
 
 #ifdef TEST
     #define dbgprintf printf
-    #include "../satisfier-types.h"
+    #include "../satiator-types.h"
 #else
-    #include "satisfier.h"
+    #include "satiator.h"
     #ifdef assert
         #undef assert
     #endif

@@ -17,8 +17,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-/*! \file satisfier.h
-    \brief Saturn Satisfier emulation bits.
+/*! \file satiator.h
+    \brief Saturn Satiator emulation bits.
 */
 
 #ifndef _SATISFIER_H
@@ -49,7 +49,7 @@ typedef enum {
     c_readdir,
     c_chdir,
     c_emulate,
-} satisfier_cmd_t;
+} satiator_cmd_t;
 
 #define C_SEEK_SET  0
 #define C_SEEK_CUR  1

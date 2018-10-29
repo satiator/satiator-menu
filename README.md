@@ -1,16 +1,16 @@
-# Saturn Satisfier: Menu
+# Saturn Satiator: Menu
 
 This project is not yet public. Please keep it under your
 hat until I officially open the source. Thank you!
 
 This is the menu code for Professor Abrasive's forthcoming
-Saturn Satisfier card. This card will jack in to the MPEG
+Saturn Satiator card. This card will jack in to the MPEG
 card slot on a Sega Saturn, and allows you to connect a USB
 thumb drive or hard disk. This menu provides a user
 interface to allow you to choose boot images, manage save
 games, and so forth. Or it will when it's done.
 
-The menu is open source, though the Satisfier itself is not.
+The menu is open source, though the Satiator itself is not.
 This means you can extend or replace the interface and
 features as you please. The disk access API is also exposed,
 so Saturn developers can add native USB drive
@@ -20,8 +20,8 @@ access to their software.
 
 This is pre-alpha software.
 
-There is a Yabause fork with Satisfier emulation support
-[here](https://github.com/abrasive/satisfier-yabause);
+There is a Yabause fork with Satiator emulation support
+[here](https://github.com/abrasive/satiator-yabause);
 this is partially complete. Currently supports the
 filesystem API; drive emulation is still to come.
 The filesystem API emulation uses some fairly recent POSIX
@@ -36,14 +36,14 @@ To get started:
 
 ```
 git clone https://github.com/cyberwarriorx/iapetus.git
-git clone https://github.com/abrasive/satisfier.git
-cd satisfier
+git clone https://github.com/abrasive/satiator.git
+cd satiator
 make
 ```
 
 This will configure and build 
 [Iapetus](https://github.com/cyberwarriorx/iapetus), then
-the Satisfier menu.
+the Satiator menu.
 You may need to edit the `Makefile` to set your cross
 compiler and the path to your Iapetus checkout. The default
 toolchain prefix is `sh-none-elf-`.
@@ -57,6 +57,6 @@ the time of writing, a clean boot is indicated by a fade to
 black from the CD player screen.
 
 You may wish to compile Yabause with `-DSATIS_DEBUG` to get
-Satisfier-related messages written to the log (eg. by
+Satiator-related messages written to the log (eg. by
 configuring with `cmake
 -DCMAKE_C_FLAGS:STRING=-DSATIS_DEBUG`).

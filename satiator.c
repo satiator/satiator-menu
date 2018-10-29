@@ -5,7 +5,7 @@
  * file, you can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <iapetus.h>
-#include "satisfier.h"
+#include "satiator.h"
 #include <string.h>
 
 // I/O primitives   {{{

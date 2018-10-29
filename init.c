@@ -5,7 +5,7 @@
  * file, you can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <iapetus.h>
-#include "satisfier.h"
+#include "satiator.h"
 #include <string.h>
 #include "fade.h"
 
@@ -52,7 +52,7 @@ void start(void) {
     fadeout(0x10);
     sysinit();
 
-    // enable Satisfier API
+    // enable Satiator API
     s_mode(S_MODE_USBFS);
 
     main_menu();    // does not return
