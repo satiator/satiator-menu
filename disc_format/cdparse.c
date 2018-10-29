@@ -9,8 +9,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <endian.h>
-#include "satisfier.h"
 #include "cdparse.h"
+
+#ifdef TEST
+    #define dbgprintf printf
+    #include "../satisfier-types.h"
+#else
+    #include "satisfier.h"
+#endif
 
 const char *cdparse_error_string = NULL;
 
