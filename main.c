@@ -84,15 +84,10 @@ void launch_game(const char *filename) {
     }
 
     fadeout(0x20);
-    dbgprintf("loading stubloader.desc\n");
-    /* s_emulate("stubloader.desc"); */
     s_emulate("out.desc");
-    dbgprintf("lid wait open...\n");
     while (is_cd_present());
-    dbgprintf("lid wait close...\n");
     while (!is_cd_present());
     s_mode(S_MODE_CDROM);
-    dbgprintf("boop\n");
     ret = boot_disc();
 
     s_mode(S_MODE_USBFS);   // failed, restore order
@@ -128,10 +123,10 @@ void main_menu(void) {
         int nents;
         file_ent *list = list_files(".", &nents);
         sort_list(list, nents);
-        char namebuf[256], pathbuf[256];
+        char namebuf[32], pathbuf[256];
         strcpy(namebuf, "Satiator - ");
         s_getcwd(pathbuf, sizeof(pathbuf));
-        strcat(namebuf, pathbuf);
+        strncat(namebuf, pathbuf, sizeof(namebuf)-strlen(namebuf)-1);
         int entry = menu_picklist(list, nents, namebuf, NULL);
         if (entry == -1)
             s_chdir("..");
