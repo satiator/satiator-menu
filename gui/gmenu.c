@@ -130,7 +130,7 @@ void menu_error(const char *title, const char *message) {
     vdp_clear_screen(&main_font);
     gui_window_draw(8*3, 8*5, width-8*5, height-8*7, TRUE, 0, RGB16(26, 26, 25) | 0x8000);
     vdp_print_text(&main_font, 8*3+6, 8*5+4, 0xf, title);
-    vdp_print_text(&main_font, 8*3+14, 8*5+20, 0x10, message);
+    vdp_print_text(&main_font, 8*3+14, 8*5+20, 0xf, message);
 
     for (;;) {
         vdp_vsync();
