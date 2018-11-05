@@ -126,7 +126,7 @@ void main_menu(void) {
         char namebuf[32], pathbuf[256];
         strcpy(namebuf, "Satiator - ");
         s_getcwd(pathbuf, sizeof(pathbuf));
-        strncat(namebuf, pathbuf, sizeof(namebuf)-strlen(namebuf)-1);
+        strlcat(namebuf, pathbuf, sizeof(namebuf));
         int entry = menu_picklist(list, nents, namebuf, NULL);
         if (entry == -1)
             s_chdir("..");
