@@ -222,7 +222,7 @@ static cue2desc_error_t handle_track(char *params) {
     if (!strcmp(s_mode, "MODE1/2048")) {
         cur_q_mode = 0x41;
         cur_secsize = 2048;
-    } else if (!strcmp(s_mode, "MODE1/2352")) {
+    } else if (!strcmp(s_mode, "MODE1/2352") || !strcmp(s_mode, "MODE2/2352")) {
         cur_q_mode = 0x41;
         cur_secsize = 2352;
     } else if (!strcmp(s_mode, "AUDIO")) {
