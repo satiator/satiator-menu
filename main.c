@@ -131,7 +131,7 @@ void main_menu(void) {
         int nents;
         file_ent *list = list_files(".", &nents);
 
-        if (nents == 1 && strcmp(pathbuf, "/"))
+        if (nents == 1 && strcmp(pathbuf, "/") && !list[0].isdir)
             launch_game(list[0].name);
 
         sort_list(list, nents);
