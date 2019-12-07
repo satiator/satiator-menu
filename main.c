@@ -22,7 +22,11 @@ static file_ent * list_files(const char *dir, int *entries) {
     int len;
     while ((len = s_stat(NULL, st, sizeof(statbuf)-1)) > 0) {
         st->name[len] = 0;
-        if (!strcmp(st->name, "."))
+        // UNIX hidden files, except .. when present
+        if (st->name[0] == '.' && strcmp(st->name, ".."))
+            continue;
+        // thanks Windows
+        if (!strcasecmp(st->name, "System Volume Information"))
             continue;
         if (st->attrib & AM_DIR) {
             list[nfiles].name = malloc(len + 2);
