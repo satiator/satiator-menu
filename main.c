@@ -113,6 +113,7 @@ void launch_game(const char *filename) {
     menu_error("Boot failed!", error);
 }
 
+char test_buf[128];
 
 void main_menu(void) {
     menu_init();
@@ -128,14 +129,22 @@ void main_menu(void) {
         file_ent *list = list_files(".", &nents);
         sort_list(list, nents);
         char namebuf[32], pathbuf[256];
-        strcpy(namebuf, "Satiator - ");
+        strcpy(namebuf, "Satiator - BETA - ");
         s_getcwd(pathbuf, sizeof(pathbuf));
         strlcat(namebuf, pathbuf, sizeof(namebuf));
         int entry = menu_picklist(list, nents, namebuf, NULL);
+        int ret;
         if (entry == -1)
             s_chdir("..");
-        else if (list[entry].isdir)
-            s_chdir(list[entry].name);
+        else if (list[entry].isdir) {
+            // Got to strip the slash :(
+            list[entry].name[strlen(list[entry].name) - 1] = '\0';
+            ret = s_chdir(list[entry].name);
+            if (ret != FR_OK) {
+                sprintf(test_buf, "Error %d ch '%s'", ret, list[entry].name);
+                menu_error("chdir", test_buf);
+            }
+        }
         else
             name = strdup(list[entry].name);
         free_list(list, nents);
