@@ -9,6 +9,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <endian.h>
+#include <stdlib.h>
+#include <stdarg.h>
 #include "cdparse.h"
 
 #ifdef TEST
@@ -18,19 +20,35 @@
     #include "satiator.h"
 #endif
 
-const char *cdparse_error_string = NULL;
+char *cdparse_error_string = NULL;
+
+void cdparse_set_error(const char *fmt, ...) {
+   va_list ap;
+   if (cdparse_error_string)
+       free(cdparse_error_string);
+
+   char buf[1];
+   va_start(ap, fmt);
+   int len = vsnprintf(buf, sizeof(buf), fmt, ap);
+   va_end(ap);
+
+   cdparse_error_string = malloc(len+1);
+   va_start(ap, fmt);
+   vsnprintf(cdparse_error_string, len+1, fmt, ap);
+   va_end(ap);
+}
 
 int iso2desc(const char *infile, const char *outfile) {
     FILE *out = fopen(outfile, "wb");
     if (!out) {
-        cdparse_error_string = "Can't open output file";
+        cdparse_set_error("Can't open output file");
         return -1;
     }
 
     struct stat st;
     int ret = stat(infile, &st);
     if (ret < 0) {
-        cdparse_error_string = "Could not stat ISO file";
+        cdparse_set_error("Could not stat ISO file");
         return -1;
     }
 
@@ -60,11 +78,13 @@ int iso2desc(const char *infile, const char *outfile) {
 }
 
 int image2desc(const char *infile, const char *outfile) {
+   if (cdparse_error_string)
+      free(cdparse_error_string);
    cdparse_error_string = NULL;
 
    const char *dot = strrchr(infile, '.');
    if (!dot) {
-      cdparse_error_string = "Unrecognised file extension";
+      cdparse_set_error("Unrecognised file extension - no dot in filename");
       return 1;
    }
 
@@ -76,6 +96,6 @@ int image2desc(const char *infile, const char *outfile) {
    if (!strcasecmp(extension, "iso"))
       return iso2desc(infile, outfile);
 
-   cdparse_error_string = "Unrecognised file extension";
+   cdparse_set_error("Unrecognised file extension '%s'", dot);
    return 1;
 }

@@ -28,11 +28,6 @@
     #define assert(arg)
 #endif
 
-#define error(errstr) \
-    do { \
-        cdparse_error_string = errstr; \
-    } while(0);
-
 static int whitespace(char c) {
     switch (c) {
         case ' ':
@@ -82,7 +77,7 @@ static segment_t *alloc_seg(void) {
 static cue2desc_error_t write_desc_file(const char *filename, segment_t *segments, int nseg) {
     FILE *out = fopen(filename, "wb");
     if (!out) {
-        error("Can't open output file");
+        cdparse_set_error("Can't open output file");
         return e_bad_out_file;
     }
 
@@ -186,14 +181,14 @@ static cue2desc_error_t handle_file(char *params) {
     struct stat st;
     int ret = stat(filename, &st);
     if (ret < 0) {
-        error("Could not stat track file");
+        cdparse_set_error("Could not stat track file '%s'", filename);
         return e_bad_track_file;
     }
 
     cur_filesize = st.st_size;
 
     if (strcmp(mode, "BINARY")) {
-        error("Bad file mode (not BINARY)");
+        cdparse_set_error("Bad file mode '%s' (need BINARY)", mode);
         return e_bad_cue_file;
     }
 
@@ -204,18 +199,18 @@ static cue2desc_error_t handle_track(char *params) {
     char *saveptr = NULL;
     char *s_tno = strtok_r(params, " ", &saveptr);
     if (!s_tno) {
-        error("Did not find track number");
+        cdparse_set_error("Did not find track number");
         return e_bad_cue_file;
     }
     cur_track = strtoul(s_tno, NULL, 10);
     if (!cur_track || cur_track > 99) {
-        error("Found invalid track number");
+        cdparse_set_error("Found invalid track number %d", cur_track);
         return e_bad_cue_file;
     }
 
     char *s_mode = strtok_r(NULL, " ", &saveptr);
     if (!s_mode) {
-        error("Did not find track mode");
+        cdparse_set_error("Did not find track mode");
         return e_bad_cue_file;
     }
 
@@ -229,7 +224,7 @@ static cue2desc_error_t handle_track(char *params) {
         cur_q_mode = 0x01;
         cur_secsize = 2352;
     } else {
-        error("Unknown track mode");
+        cdparse_set_error("Unknown track mode '%s'", s_mode);
         return e_bad_cue_file;
     }
 
@@ -240,7 +235,7 @@ static cue2desc_error_t handle_index(char *params) {
     int index, mm, ss, ff;
     int n = sscanf(params, "%d %d:%d:%d", &index, &mm, &ss, &ff);
     if (n != 4) {
-        error("Could not parse index");
+        cdparse_set_error("Could not parse index '%s'", params);
         return e_bad_cue_file;
     }
 
@@ -269,7 +264,7 @@ static cue2desc_error_t handle_pregap(char *params) {
     int mm, ss, ff;
     int n = sscanf(params, "%d:%d:%d", &mm, &ss, &ff);
     if (n != 3) {
-        error("Could not parse pregap");
+        cdparse_set_error("Could not parse pregap '%s'", params);
         return e_bad_cue_file;
     }
     uint32_t fad = ff + 75*(ss + 60*mm);
@@ -288,7 +283,7 @@ int cue2desc(const char *cue_file, const char *desc_file) {
 
     FILE *fp = fopen(cue_file, "r");
     if (!fp) {
-        error("Could not open specified cue file");
+        cdparse_set_error("Could not open specified cue file");
         return e_no_cue_file;
     }
 
@@ -317,7 +312,7 @@ int cue2desc(const char *cue_file, const char *desc_file) {
         // Find command word
         char *space = strchr(line, ' ');
         if (!space) {
-            error("No space in line");
+            cdparse_set_error("No space in line");
             ret = e_bad_cue_file;
             goto out;
         }

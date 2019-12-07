@@ -4,7 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, you can obtain one at http://mozilla.org/MPL/2.0/. */
 
-extern const char *cdparse_error_string;
+extern char *cdparse_error_string;
 int image2desc(const char *infile, const char *outfile);
 
 int cue2desc(const char *cue_file, const char *desc_file);
+void cdparse_set_error(const char *fmt, ...);
