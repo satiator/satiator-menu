@@ -125,11 +125,17 @@ void main_menu(void) {
 
     char *name = NULL;
     for(;;) {
+        char pathbuf[512];
+        s_getcwd(pathbuf, sizeof(pathbuf));
+
         int nents;
         file_ent *list = list_files(".", &nents);
+
+        if (nents == 1 && strcmp(pathbuf, "/"))
+            launch_game(list[0].name);
+
         sort_list(list, nents);
-        char namebuf[32], pathbuf[256];
-        s_getcwd(pathbuf, sizeof(pathbuf));
+        char namebuf[32];
         strcpy(namebuf, "Satiator - ");
         strlcat(namebuf, pathbuf, sizeof(namebuf));
         int entry = menu_picklist(list, nents, namebuf, NULL);
