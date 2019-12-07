@@ -129,8 +129,8 @@ void main_menu(void) {
         file_ent *list = list_files(".", &nents);
         sort_list(list, nents);
         char namebuf[32], pathbuf[256];
-        strcpy(namebuf, "Satiator - BETA - ");
         s_getcwd(pathbuf, sizeof(pathbuf));
+        strcpy(namebuf, "Satiator - ");
         strlcat(namebuf, pathbuf, sizeof(namebuf));
         int entry = menu_picklist(list, nents, namebuf, NULL);
         int ret;

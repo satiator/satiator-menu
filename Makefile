@@ -31,6 +31,9 @@ NEWLIB_LIBDIR=newlib-build/prefix/$(NEWLIB_ARCH)/lib
 
 LDFLAGS += -L$(IAPETUS_LIBDIR) -L$(NEWLIB_LIBDIR) -Wl,--gc-sections
 
+VERSION ?= $(shell git describe --always --dirty --match aotsrintsoierats) $(shell date +%y%m%d%H%M%S)
+CFLAGS += -DVERSION='"$(VERSION)"'
+
 SRCS := init.c gui/fade.c satiator.c syscall.c jhloader.c main.c gui/gmenu.c disc_format/cdparse.c disc_format/cue2desc.c
 
 ifeq ($(DEBUG), yes)

@@ -70,6 +70,7 @@ int menu_picklist(file_ent *entries, int n_entries, char *caption, font_struct *
         char namebuf[256];
         s_getcwd(namebuf, sizeof(namebuf));
         vdp_print_text(font, 8+6, 8+4, 0xf, caption);
+        vdp_print_text(font, 8+8, height-8, 0xf, "BETA - " VERSION);
         // draw some entries
         int i;
         for (i=0; i<n_rows; i++) {
