@@ -66,7 +66,7 @@ out/%.o: disc_format/%.c
 out/%.o: gui/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-out/.dir_exists:
+out/.dir_exists: newlib-build/prefix/$(NEWLIB_ARCH)/lib/libc.a
 	mkdir -p out
 	touch out/.dir_exists
 
