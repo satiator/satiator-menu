@@ -28,6 +28,7 @@ IAPETUS_LIBDIR=iapetus-build/src
 
 NEWLIB_ARCH=$(patsubst %-,%,$(basename $(CROSS_COMPILE)))
 NEWLIB_LIBDIR=newlib-build/prefix/$(NEWLIB_ARCH)/lib
+CFLAGS += -I$(NEWLIB_LIBDIR)/../include
 
 LDFLAGS += -L$(IAPETUS_LIBDIR) -L$(NEWLIB_LIBDIR) -Wl,--gc-sections
 
