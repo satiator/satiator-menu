@@ -1,5 +1,7 @@
 #!/bin/bash
 
+pwd
+
 set -e
 
 PREFIX=`pwd`/prefix/
