@@ -4,6 +4,7 @@ build:
     tags:
         - c2-maker
     script:
+        - "rm -rf iapetus-build newlib-build"
         - "make clean"
         - "make VERSION=$CI_JOB_ID"
     artifacts:
