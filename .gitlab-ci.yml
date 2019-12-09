@@ -5,7 +5,7 @@ build:
         - c2-maker
     script:
         - "make clean"
-        - "make"
+        - "make VERSION=$CI_JOB_ID"
     artifacts:
         expire_in: 100 years
         paths:
