@@ -86,7 +86,7 @@ iapetus-build/Makefile: $(CC_DEPS)
 	(cd iapetus-build; CC=$(CC) CXX=$(CC) cmake $(IAPETUS_SRC) -DCMAKE_SHARED_LINKER_FLAGS:STRING="$(LDFLAGS)" -DCMAKE_C_FLAGS='-DREENTRANT_SYSCALLS_PROVIDED $(BASE_CFLAGS)')
 
 iapetus-build/src/libiapetus.a: iapetus-build/Makefile
-	+(cd iapetus-build; make -f src/CMakeFiles/iapetus.dir/build.make src/libiapetus.a)
+	+(cd iapetus-build; make -f src/CMakeFiles/iapetus.dir/build.make VERBOSE=1 src/libiapetus.a)
 
 newlib-build/Makefile:
 	mkdir -p newlib-build
