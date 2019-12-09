@@ -13,14 +13,14 @@ DEBUG := yes
 CROSS_COMPILE ?= sh-none-elf-
 
 # Absolute location of Iapetus source tree
-IAPETUS_SRC ?= $(shell pwd)/../iapetus
+IAPETUS_SRC ?= $(shell pwd)/iapetus
 NEWLIB_SRC ?= $(shell pwd)/../newlib-2.2.0.20150423
 
 CC = $(CROSS_COMPILE)gcc
 AS = $(CROSS_COMPILE)as
 OBJCOPY = $(CROSS_COMPILE)objcopy
 
-CFLAGS ?= -O2 -m2 -nostdlib -Wall -ggdb3 -ffunction-sections -fdata-sections
+CFLAGS ?= -O2 -m2 -nostdlib -Wall -ggdb3 -ffunction-sections -fdata-sections -fno-stack-protector
 CFLAGS += -I$(IAPETUS_SRC)/src
 CFLAGS += -I. -Idisc_format -Igui
 
@@ -77,7 +77,7 @@ distclean:
 
 iapetus-build/Makefile:
 	mkdir -p iapetus-build
-	(cd iapetus-build; CC=$(CC) CMAKE_C_FLAGS=-ggdb3 cmake $(IAPETUS_SRC))
+	(cd iapetus-build; CC=$(CC) CMAKE_C_FLAGS="-ggdb3 -fno-stack-protector" cmake $(IAPETUS_SRC))
 
 iapetus-build/src/libiapetus.a: iapetus-build/Makefile
 	(cd iapetus-build; make)

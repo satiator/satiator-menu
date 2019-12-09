@@ -1,4 +1,6 @@
 build:
+    variables:
+        GIT_SUBMODULE_STRATEGY: recursive
     tags:
         - c2-maker
     script:

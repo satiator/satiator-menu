@@ -1,0 +1,3 @@
+[submodule "iapetus"]
+	path = iapetus
+	url = ../iapetus.git
