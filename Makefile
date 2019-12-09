@@ -77,10 +77,10 @@ distclean:
 
 iapetus-build/Makefile:
 	mkdir -p iapetus-build
-	(cd iapetus-build; CC=$(CC) CMAKE_C_FLAGS="-ggdb3 -fno-stack-protector" CMAKE_CXX_COMPILER="sh-none-elf-gcc" cmake $(IAPETUS_SRC))
+	(cd iapetus-build; CC=$(CC) CXX=$(CC) cmake $(IAPETUS_SRC) -DCMAKE_SHARED_LINKER_FLAGS:STRING="$(LDFLAGS)")
 
 iapetus-build/src/libiapetus.a: iapetus-build/Makefile
-	(cd iapetus-build; make)
+	(cd iapetus-build; make -f src/CMakeFiles/iapetus.dir/build.make src/libiapetus.a)
 
 newlib-build/Makefile:
 	mkdir -p newlib-build
