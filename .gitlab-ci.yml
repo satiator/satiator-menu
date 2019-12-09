@@ -1,0 +1,12 @@
+build:
+    tags:
+        - c2-maker
+    script:
+        - "make clean"
+        - "make"
+    artifacts:
+        expire_in: 100 years
+        paths:
+            - out/menu.bin
+            - out/menu.map
+            - out/menu.elf
