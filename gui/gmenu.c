@@ -11,6 +11,8 @@
 #include "gmenu.h"
 
 static font_struct main_font;
+static char *version;
+int asprintf(char **strp, const char *fmt, ...);
 
 void menu_init(void) {
     screen_settings_struct settings;
@@ -40,6 +42,19 @@ void menu_init(void) {
 
     // Display everything
     vdp_disp_on();
+
+    char fw_version[32];
+    s_get_fw_version(fw_version, sizeof(fw_version));
+    char *space = strchr(fw_version, ' ');
+    if (space)
+        *space = '\0';
+
+    asprintf(&version, "FW%s MNU%s", fw_version, VERSION);
+    space = strchr(version, ' ');
+    if (space)
+        space = strchr(space+1, ' ');
+    if (space)
+        *space = '\0';
 }
 
 #define SCROLL_OFF 3
@@ -70,7 +85,7 @@ int menu_picklist(file_ent *entries, int n_entries, char *caption, font_struct *
         char namebuf[256];
         s_getcwd(namebuf, sizeof(namebuf));
         vdp_print_text(font, 8+6, 8+4, 0xf, caption);
-        vdp_print_text(font, 8+8, height-8, 0xf, "BETA - " VERSION);
+        vdp_print_text(font, 8+8, height-8, 0xf, version);
         // draw some entries
         int i;
         for (i=0; i<n_rows; i++) {

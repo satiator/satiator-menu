@@ -7,6 +7,7 @@
 #include <iapetus.h>
 #include "satiator.h"
 #include <string.h>
+#include <stdio.h>
 
 // I/O primitives   {{{
 
@@ -66,7 +67,7 @@ static inline int buffer_xfer(void *buf, int len, int dir) {
 // Convenience functions {{{
 // Most calls use a similar pattern
 static inline void set_cmd(cmd_t cmd, int op, int fd, int flags, int len) {
-    cmd[0] = (op<<8) | (fd & 0xf);
+    cmd[0] = (op<<8) | (fd & 0xff);
     cmd[1] = flags;
     cmd[2] = len>>16;
     cmd[3] = len;
@@ -250,4 +251,15 @@ int s_emulate(const char *filename) {
     simplecall(c_emulate, 0, 0, len);
     return 0;
 }
+
+int s_get_fw_version(char *buf, int buflen) {
+    simplecall(c_info, i_fw_version, 0, 0);
+    buflen--;
+    if (buflen > get_length())
+        buflen = get_length();
+    buffer_read(buf, buflen);
+    buf[buflen] = 0;
+    return buflen;
+}
+
 // }}}

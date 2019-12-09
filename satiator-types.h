@@ -32,7 +32,7 @@ typedef enum {
     c_read_buffer,
 
     c_mkfs = 0x94,
-    c_fsinfo,
+    c_info,
     c_settime,
 
     c_open = 0xA0,
@@ -50,6 +50,10 @@ typedef enum {
     c_chdir,
     c_emulate,
 } satiator_cmd_t;
+
+typedef enum {
+    i_fw_version = 0,
+} satisfier_info_cmd_t;
 
 #define C_SEEK_SET  0
 #define C_SEEK_CUR  1
