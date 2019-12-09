@@ -49,8 +49,10 @@ void menu_init(void) {
     if (space)
         *space = '\0';
 
-    asprintf(&version, "FW%s MNU%s", fw_version, VERSION);
+    asprintf(&version, "BETA FW%s MNU%s", fw_version, VERSION);
     space = strchr(version, ' ');
+    if (space)
+        space = strchr(space+1, ' ');
     if (space)
         space = strchr(space+1, ' ');
     if (space)
