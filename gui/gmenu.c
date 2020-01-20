@@ -125,15 +125,23 @@ int menu_picklist(file_ent *entries, int n_entries, char *caption, font_struct *
                 selected = -1;
                 goto out;
             }
+            if (per[0].but_push_once & PAD_L) {
+                selected -= 20;
+                goto move;
+            }
+            if (per[0].but_push_once & PAD_R) {
+                selected += 20;
+                goto move;
+            }
         };
 move:
         if (selected >= n_entries)
             selected = n_entries - 1;
         if (selected < 0)
             selected = 0;
-        if (selected - scrollbase < SCROLL_OFF && scrollbase > 0)
+        while (selected - scrollbase < SCROLL_OFF && scrollbase > 0)
             scrollbase--;
-        if (scrollbase + n_rows - selected < SCROLL_OFF && scrollbase < n_entries - n_rows)
+        while (scrollbase + n_rows - selected < SCROLL_OFF && scrollbase < n_entries - n_rows)
             scrollbase++;
     }
 
