@@ -7,9 +7,11 @@ build:
         - "rm -rf iapetus-build newlib-build"
         - "make clean"
         - "make VERSION=$CI_JOB_ID"
+        - "cd out; zip satiator_menu${CI_JOB_ID}.zip menu.bin; mv satiator_menu${CI_JOB_ID}.zip .."
     artifacts:
         expire_in: 100 years
         paths:
             - out/menu.bin
             - out/menu.map
             - out/menu.elf
+            - satiator_menu*.zip
