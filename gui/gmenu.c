@@ -24,6 +24,9 @@ static int update_accel(int *accel) {
     if (v < 0)
         return 0;
 
+    if (v > 0x20 && (v & 1) == 0)
+        return 1;
+
     if ((v & 0x3) == 0)
         return 1;
 
