@@ -14,6 +14,51 @@ static font_struct main_font;
 static char *version;
 int asprintf(char **strp, const char *fmt, ...);
 
+static int update_accel(int *accel) {
+    int v = (*accel)++;
+    if (!v)
+        return 1;
+
+    v -= 30;
+
+    if (v < 0)
+        return 0;
+
+    if ((v & 0x3) == 0)
+        return 1;
+
+    return 0;
+}
+
+struct {
+    int acc_l, acc_r, acc_u, acc_d;
+} pad_state;
+
+
+static int update_button_bit(int bit, int *accel) {
+    int pressed = 0;
+
+    if (per[0].but_push & bit)
+        pressed = update_accel(accel);
+    else
+        *accel = 0;
+
+    if (pressed)
+        return bit;
+    return 0;
+}
+
+static int pad_poll_buttons(void) {
+    int out = 0;
+
+    out |= update_button_bit(PAD_UP, &pad_state.acc_u);
+    out |= update_button_bit(PAD_DOWN, &pad_state.acc_d);
+    out |= update_button_bit(PAD_L, &pad_state.acc_l);
+    out |= update_button_bit(PAD_R, &pad_state.acc_r);
+
+    return out;
+}
+
 void menu_init(void) {
     screen_settings_struct settings;
     // Setup a screen for us draw on
@@ -110,11 +155,12 @@ int menu_picklist(file_ent *entries, int n_entries, char *caption, font_struct *
         // wait for input
         for(;;) {
             vdp_vsync();
-            if (per[0].but_push_once & PAD_UP) {
+            int buttons = pad_poll_buttons();
+            if (buttons & PAD_UP) {
                 selected--;
                 goto move;
             }
-            if (per[0].but_push_once & PAD_DOWN) {
+            if (buttons & PAD_DOWN) {
                 selected++;
                 goto move;
             }
@@ -125,11 +171,11 @@ int menu_picklist(file_ent *entries, int n_entries, char *caption, font_struct *
                 selected = -1;
                 goto out;
             }
-            if (per[0].but_push_once & PAD_L) {
+            if (buttons & PAD_L) {
                 selected -= 20;
                 goto move;
             }
-            if (per[0].but_push_once & PAD_R) {
+            if (buttons & PAD_R) {
                 selected += 20;
                 goto move;
             }
