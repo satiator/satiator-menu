@@ -15,10 +15,12 @@ static file_ent * list_files(const char *dir, int *entries) {
     char statbuf[280];
     s_stat_t *st = (s_stat_t*)statbuf;
     int nfiles = 0;
-    int listsz = 8;
+    int listsz = 64;
     file_ent *list = malloc(listsz * sizeof(file_ent));
-    if (!list)
+    if (!list) {
+        menu_error("System error", "Error allocating file list");
         return NULL;
+    }
     int len;
     while ((len = s_stat(NULL, st, sizeof(statbuf)-1)) > 0) {
         st->name[len] = 0;
