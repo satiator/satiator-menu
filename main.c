@@ -115,6 +115,7 @@ void launch_game(const char *filename) {
 
 char test_buf[128];
 
+char pathbuf[512];
 void main_menu(void) {
     menu_init();
 
@@ -125,7 +126,6 @@ void main_menu(void) {
 
     char *name = NULL;
     for(;;) {
-        char pathbuf[512];
         s_getcwd(pathbuf, sizeof(pathbuf));
 
         int nents;
