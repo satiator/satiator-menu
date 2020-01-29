@@ -33,6 +33,12 @@ void sysinit(void) {
       interrupt_set_level_mask(0x7);
 }
 
+uint16_t vdp1_stash[0x40000];
+
+void restore_vdp_mem(void) {
+    memcpy((void*)VDP1_RAM, vdp1_stash, sizeof(vdp1_stash));
+}
+
 extern char _load_start, _load_end, _bss_end, _free_ram_end;
 
 void start(void) __attribute__((section(".start")));
@@ -48,6 +54,9 @@ void start(void) {
         "mov %0, r15"
         : : "r" (&_free_ram_end)
     );
+
+    // copy VDP1 RAM first; some games depend on memory they don't initialise
+    memcpy(vdp1_stash, (void*)VDP1_RAM, sizeof(vdp1_stash));
 
     fadeout(0x10);
     sysinit();
