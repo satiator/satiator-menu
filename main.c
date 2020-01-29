@@ -81,6 +81,19 @@ static void free_list(file_ent *list, int n_entries) {
     free(list);
 }
 
+static void fix_game_bugs(void) {
+    // Fixes games that normally need to go through the BIOS to launch properly
+    volatile u16 *vdp1 = (void*)VDP1_RAM;
+
+    // Batsugun needs uninitialised command entries to be stop
+    for (int i=0; i<0x40000; i += 0x10)
+        vdp1[i] = 0x8000;
+
+    // Fix for untextured quads in VDP1
+    // Causes draw bugs in Croc (Europe)
+    vdp1[0x3ffff] = 0xffff;
+}
+
 void launch_game(const char *filename) {
     dbgprintf("Loading ISO: '%s'\n", filename);
     int ret = image2desc(filename, "out.desc");
@@ -90,6 +103,9 @@ void launch_game(const char *filename) {
     }
 
     fadeout(0x20);
+
+    fix_game_bugs();
+
     s_emulate("out.desc");
     while (is_cd_present());
     while (!is_cd_present());
