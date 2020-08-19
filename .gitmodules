@@ -1,3 +1,6 @@
 [submodule "iapetus"]
 	path = iapetus
 	url = ../iapetus.git
+[submodule "newlib"]
+	path = newlib
+	url = git://sourceware.org/git/newlib-cygwin.git
