@@ -1,0 +1,5 @@
+# v51 2020-09-22
+
+## Added
+
+- Satiator RTC support. Files are now stamped on the SD card according to the Saturn's RTC.
