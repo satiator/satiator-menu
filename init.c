@@ -9,6 +9,8 @@
 #include <string.h>
 #include "fade.h"
 
+void set_satiator_rtc(void);
+
 // Reset everything we can before loading the menu.
 void sysinit(void) {
    int i;
@@ -59,10 +61,12 @@ void start(void) {
     memcpy(vdp1_stash, (void*)VDP1_RAM, sizeof(vdp1_stash));
 
     fadeout(0x10);
-    sysinit();
 
     // enable Satiator API
     s_mode(S_MODE_USBFS);
+    set_satiator_rtc();
+
+    sysinit();
 
     main_menu();    // does not return
 }

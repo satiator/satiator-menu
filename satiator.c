@@ -223,6 +223,12 @@ int s_getcwd(char *filename, int buflen) {
     filename[buflen] = 0;
     return buflen;
 }
+
+// Set the Satiator RTC. Takes a FAT timestamp.
+int s_settime(uint32_t time) {
+    simplecall(c_settime, 0, 0, time);
+    return 0;
+}
 // }}}
 
 // System API {{{

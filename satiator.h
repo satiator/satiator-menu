@@ -75,6 +75,7 @@ int s_unlink(const char *filename);
 int s_opendir(const char *filename);
 int s_chdir(const char *filename);
 int s_getcwd(char *filename, int buflen);
+int s_settime(uint32_t fattime);
 int s_emulate(const char *filename);
 int s_mode(int mode);
 int s_get_fw_version(char *buf, int buflen);
