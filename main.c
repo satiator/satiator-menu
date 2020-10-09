@@ -96,10 +96,10 @@ void launch_game(const char *filename) {
     s_emulate("out.desc");
     while (is_cd_present());
     while (!is_cd_present());
-    s_mode(S_MODE_CDROM);
+    s_mode(s_cdrom);
     ret = boot_disc();
 
-    s_mode(S_MODE_USBFS);   // failed, restore order
+    s_mode(s_api);   // failed, restore order
     s_emulate("");  // close the old file
     fadein(0x20);
 

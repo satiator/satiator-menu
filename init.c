@@ -63,7 +63,7 @@ void start(void) {
     fadeout(0x10);
 
     // enable Satiator API
-    s_mode(S_MODE_USBFS);
+    s_mode(s_api);
     set_satiator_rtc();
 
     sysinit();

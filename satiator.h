@@ -61,6 +61,11 @@ typedef struct {
     char name[];
 } __attribute__((packed)) s_stat_t;
 
+enum satiator_mode {
+    s_cdrom = 0,
+    s_api,
+};
+
 int s_open(const char *filename, int flags);
 int s_close(int fd);
 int s_seek(int fd, int offset, int whence);
@@ -77,13 +82,11 @@ int s_chdir(const char *filename);
 int s_getcwd(char *filename, int buflen);
 int s_settime(uint32_t fattime);
 int s_emulate(const char *filename);
-int s_mode(int mode);
+int s_mode(enum satiator_mode mode);
 int s_get_fw_version(char *buf, int buflen);
 
 #define S_MAXBUF    2048
 
-#define S_MODE_CDROM    0
-#define S_MODE_USBFS    1
 
 #include <unistd.h>
 #define dbgprintf(...) printf(__VA_ARGS__)
