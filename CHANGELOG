@@ -1,3 +1,12 @@
+# v52 2020-10-19
+
+## Added
+
+- Action Replay support. Backup, reflash, and erase AR cartridges.
+    Erasing the cartridge allows you to use it as a RAM expansion.
+    To do this with a stock AR cart, remove the AR and boot into the
+    Satiator menu before inserting the AR.
+
 # v51 2020-09-22
 
 ## Added
