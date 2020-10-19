@@ -4,9 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, you can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include <iapetus.h>
 #include "filelist.h"
 
 void menu_init(void);
 void menu_error(const char *title, const char *message);
-int menu_picklist(const file_ent *entries, int n_entries, const char *caption, font_struct *font);
+int menu_picklist(const file_ent *entries, int n_entries, const char *caption);

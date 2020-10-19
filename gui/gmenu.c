@@ -188,10 +188,8 @@ static void erase(void) {
         char_map[i] = 0;
 }
 
-int menu_picklist(const file_ent *entries, int n_entries, const char *caption, font_struct *font) {
-    if (!font)
-        font = &main_font;
-    vdp_clear_screen(font);
+int menu_picklist(const file_ent *entries, int n_entries, const char *caption) {
+    vdp_clear_screen(&main_font);
 
     int margin_top = 24;
     int margin_bot = 16;
@@ -218,8 +216,8 @@ int menu_picklist(const file_ent *entries, int n_entries, const char *caption, f
 
     gui_window_init();
     gui_window_draw(8, 8, width-16, height-16, TRUE, 0, RGB16(26, 26, 25) | 0x8000);
-    vdp_print_text(font, 8+6, 8+4, 0xf, caption);
-    vdp_print_text(font, 8+8, height-8, 0xf, version);
+    vdp_print_text(&main_font, 8+6, 8+4, 0xf, caption);
+    vdp_print_text(&main_font, 8+8, height-8, 0xf, version);
 
     int x_text = 4;
 

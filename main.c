@@ -83,7 +83,7 @@ void main_menu(void) {
         char namebuf[32];
         strcpy(namebuf, "Satiator - ");
         strlcat(namebuf, pathbuf, sizeof(namebuf));
-        int entry = menu_picklist(list, nents, namebuf, NULL);
+        int entry = menu_picklist(list, nents, namebuf);
         int ret;
         if (entry == -1)
             s_chdir("..");
