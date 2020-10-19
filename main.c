@@ -61,9 +61,9 @@ void launch_game(const char *filename) {
 char pathbuf[512];
 void image_menu(void) {
     char *name = NULL;
-    for(;;) {
-        s_getcwd(pathbuf, sizeof(pathbuf));
+    strcpy(pathbuf, "/");
 
+    for(;;) {
         int nents;
         file_ent *list = file_list_create(".", &nents, image_file_filter);
 
@@ -73,18 +73,29 @@ void image_menu(void) {
         file_list_sort(list, nents);
         char namebuf[32];
         strcpy(namebuf, "Satiator - ");
-        strlcat(namebuf, pathbuf, sizeof(namebuf));
+        char *dirname = strrchr(pathbuf, '/');
+        if (dirname[1])
+            dirname++;
+        strlcat(namebuf, dirname, sizeof(namebuf));
         int entry = menu_picklist(list, nents, namebuf);
         int ret;
         if (entry == -1) {
-            if (!strcmp(pathbuf, "/"))
+            if (!strcmp(pathbuf, "/")) {
                 return;
-            else
-                s_chdir("..");
+            } else {
+                char *last_slash = strrchr(pathbuf, '/');
+                if (last_slash == pathbuf)
+                    last_slash++;
+                *last_slash = '\0';
+                s_chdir(pathbuf);
+            }
         } else if (list[entry].isdir) {
             // Got to strip the slash :(
             list[entry].name[strlen(list[entry].name) - 1] = '\0';
-            ret = s_chdir(list[entry].name);
+            if (pathbuf[1])
+                strcat(pathbuf, "/");
+            strcat(pathbuf, list[entry].name);
+            ret = s_chdir(pathbuf);
             if (ret != FR_OK) {
                 menu_error("chdir", "Can't change directory, corrupt SD card?");
             }
