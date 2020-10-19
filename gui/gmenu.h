@@ -9,3 +9,7 @@
 void menu_init(void);
 void menu_error(const char *title, const char *message);
 int menu_picklist(const file_ent *entries, int n_entries, const char *caption);
+
+void menu_progress_begin(const char *caption, int max);
+void menu_progress_update(int value);
+void menu_progress_complete(void);

@@ -58,17 +58,8 @@ void launch_game(const char *filename) {
     menu_error("Boot failed!", error);
 }
 
-char test_buf[128];
-
 char pathbuf[512];
-void main_menu(void) {
-    menu_init();
-
-#ifdef DEBUG
-    if (ud_detect() == IAPETUS_ERR_OK)
-        syscall_enable_stdout_ud = 1;
-#endif
-
+void image_menu(void) {
     char *name = NULL;
     for(;;) {
         s_getcwd(pathbuf, sizeof(pathbuf));
@@ -85,15 +76,17 @@ void main_menu(void) {
         strlcat(namebuf, pathbuf, sizeof(namebuf));
         int entry = menu_picklist(list, nents, namebuf);
         int ret;
-        if (entry == -1)
-            s_chdir("..");
-        else if (list[entry].isdir) {
+        if (entry == -1) {
+            if (!strcmp(pathbuf, "/"))
+                return;
+            else
+                s_chdir("..");
+        } else if (list[entry].isdir) {
             // Got to strip the slash :(
             list[entry].name[strlen(list[entry].name) - 1] = '\0';
             ret = s_chdir(list[entry].name);
             if (ret != FR_OK) {
-                sprintf(test_buf, "Error %d ch '%s'", ret, list[entry].name);
-                menu_error("chdir", test_buf);
+                menu_error("chdir", "Can't change directory, corrupt SD card?");
             }
         }
         else
@@ -105,5 +98,22 @@ void main_menu(void) {
             free(name);
             name = NULL;
         }
+    }
+}
+
+void flash_menu(void);
+const file_ent top_menu_options[] = {
+    {"Browse images", 0, &image_menu},
+    {"Action Replay tools", 0, &flash_menu},
+};
+
+void main_menu(void) {
+    menu_init();
+    image_menu();
+
+    while (1) {
+        int entry = menu_picklist(top_menu_options, sizeof(top_menu_options)/sizeof(*top_menu_options), "Satiator");
+        void (*submenu)(void) = top_menu_options[entry].priv;
+        submenu();
     }
 }

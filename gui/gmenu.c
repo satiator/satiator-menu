@@ -301,3 +301,35 @@ void menu_error(const char *title, const char *message) {
             break;
     }
 }
+
+static int progress_max;
+
+void menu_progress_update(int value) {
+    int top = 8*14;
+    int left = 8*6;
+    int width = 29; // chars
+
+    int chars = (value * width) / progress_max;
+    for (int i=0; i<chars; i++)
+        vdp_print_text(&main_font, left + 8*i, top, 0x10, "#");
+}
+
+void menu_progress_begin(const char *caption, int max) {
+    progress_max = max;
+
+    int width, height;
+    vdp_get_scr_width_height(&width, &height);
+    vdp_clear_screen(&main_font);
+    gui_window_init();
+
+    int top = 8*11;
+    int left = 8*5;
+    gui_window_draw(left, top, width-2*left, height-2*top, TRUE, 0, RGB16(26, 26, 25) | 0x8000);
+    vdp_print_text(&main_font, left+6, top+4, 0xf, caption);
+
+    menu_progress_update(0);
+}
+
+void menu_progress_complete(void) {
+    vdp_clear_screen(&main_font);
+}
