@@ -101,10 +101,10 @@ void image_menu(void) {
     }
 }
 
-void flash_menu(void);
+void ar_menu(void);
 const file_ent top_menu_options[] = {
     {"Browse images", 0, &image_menu},
-    {"Action Replay tools", 0, &flash_menu},
+    {"Action Replay tools", 0, &ar_menu},
 };
 
 void main_menu(void) {
