@@ -1,3 +1,11 @@
+# v53 2020-10-19
+
+## Fixed
+
+- Problems on exFAT-formatted SD cards caused by a lack of parent directory
+    information.  This included not auto-booting when entering a folder with a
+    single image, and an inability to move up directories in the hierarchy.
+
 # v52 2020-10-19
 
 ## Added
