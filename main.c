@@ -8,77 +8,17 @@
 #include "gmenu.h"
 #include "jhloader.h"
 
-static file_ent * list_files(const char *dir, int *entries) {
-    *entries = 0;
-    if (s_opendir(dir))
-        return NULL;
-    char statbuf[280];
-    s_stat_t *st = (s_stat_t*)statbuf;
-    int nfiles = 0;
-    int listsz = 64;
-    file_ent *list = malloc(listsz * sizeof(file_ent));
-    if (!list) {
-        menu_error("System error", "Error allocating file list");
-        return NULL;
-    }
-    int len;
-    while ((len = s_stat(NULL, st, sizeof(statbuf)-1)) > 0) {
-        st->name[len] = 0;
-        // UNIX hidden files, except .. when present
-        if (st->name[0] == '.' && strcmp(st->name, ".."))
-            continue;
-        // thanks Windows
-        if (!strcasecmp(st->name, "System Volume Information"))
-            continue;
-        if (st->attrib & AM_DIR) {
-            list[nfiles].name = malloc(len + 2);
-            strcpy(list[nfiles].name, st->name);
-            list[nfiles].name[len] = '/';
-            list[nfiles].name[len+1] = 0;
-            list[nfiles].isdir = 1;
-        } else {
-            if (len < 4)
-                continue;
-            if (strcasecmp(&st->name[len-4], ".cue") &&
-                strcasecmp(&st->name[len-4], ".iso"))
-                continue;
-
-            list[nfiles].name = strdup(st->name);
-            list[nfiles].isdir = 0;
-        }
-        if (!list[nfiles].name) {
-            free(list);
-            return NULL;
-        }
-
-        nfiles++;
-        if (nfiles == listsz) {
-            listsz *= 2;
-            list = realloc(list, listsz * sizeof(file_ent));
-        }
-    }
-    *entries = nfiles;
-    return list;
-}
-
-static int compar_list(const void *pa, const void *pb) {
-    const file_ent *a = pa, *b = pb;
-    if (a->isdir && !b->isdir)
-        return -1;
-    if (!a->isdir && b->isdir)
+int image_file_filter(file_ent *entry) {
+    if (entry->isdir)
         return 1;
-    return strcmp(a->name, b->name);
-}
 
-static void sort_list(file_ent *list, int n_entries) {
-    qsort(list, n_entries, sizeof(file_ent), compar_list);
-}
+    int len = strlen(entry->name);
+    if (!strcasecmp(&entry->name[len-4], ".cue"))
+        return 1;
+    if (!strcasecmp(&entry->name[len-4], ".iso"))
+        return 1;
 
-static void free_list(file_ent *list, int n_entries) {
-    int i;
-    for (i=0; i<n_entries; i++)
-        free(list[i].name);
-    free(list);
+    return 0;
 }
 
 void launch_game(const char *filename) {
@@ -134,12 +74,12 @@ void main_menu(void) {
         s_getcwd(pathbuf, sizeof(pathbuf));
 
         int nents;
-        file_ent *list = list_files(".", &nents);
+        file_ent *list = file_list_create(".", &nents, image_file_filter);
 
         if (nents == 1 && strcmp(pathbuf, "/") && !list[0].isdir)
             launch_game(list[0].name);
 
-        sort_list(list, nents);
+        file_list_sort(list, nents);
         char namebuf[32];
         strcpy(namebuf, "Satiator - ");
         strlcat(namebuf, pathbuf, sizeof(namebuf));
@@ -158,7 +98,7 @@ void main_menu(void) {
         }
         else
             name = strdup(list[entry].name);
-        free_list(list, nents);
+        file_list_free(list, nents);
 
         if (name) {
             launch_game(name);

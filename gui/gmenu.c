@@ -188,7 +188,7 @@ static void erase(void) {
         char_map[i] = 0;
 }
 
-int menu_picklist(file_ent *entries, int n_entries, char *caption, font_struct *font) {
+int menu_picklist(const file_ent *entries, int n_entries, const char *caption, font_struct *font) {
     if (!font)
         font = &main_font;
     vdp_clear_screen(font);
