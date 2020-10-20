@@ -131,16 +131,32 @@ static void flash_flash_ar(void) {
 
         s_read(fd, buf, write_size);
 
-        if (memcmp((void*)write_ptr, buf, page_words*2)) {
-            if (memcmp((void*)write_ptr, empty, page_words*2))
+        int matches = 1;
+        int empty = 1;
+        uint16_t *bptr = (void*)buf;
+        for (volatile uint16_t *rptr = write_ptr; rptr < write_ptr+page_words; rptr++) {
+            if (*rptr != 0xffff)
+                empty = 0;
+            if (*rptr != *bptr++)
+                matches = 0;
+            if (!(empty | matches))
+                break;
+        }
+
+        if (!matches) {
+            if (flash_info.needs_page_erase && !empty)
                 ar_erase_flash(&flash_info, write_ptr, pages_per);
             ar_write_flash(&flash_info, write_ptr, (void*)buf, pages_per);
 
-            if (memcmp((void*)write_ptr, buf, page_words*2)) {
-                char msg_buf[64];
-                sprintf(msg_buf, "Verify error on block %d", i);
-                menu_error("Action Replay", msg_buf);
-                return;
+            char msg_buf[64];
+            for (int j=0; j<page_words; j++) {
+                u16 got = write_ptr[j];
+                u16 want = ((u16*)buf)[j];
+                if (got != want) {
+                    sprintf(msg_buf, "Verify error at address 0x%x: %04x!=%04x", j*2, got, want);
+                    menu_error("Action Replay", msg_buf);
+                    return;
+                }
             }
         }
 
