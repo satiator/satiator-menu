@@ -171,9 +171,6 @@ void menu_init(void) {
     vdp_set_default_palette();
     init_bitmap_mode();
     init_char_mode();
-    VDP2_REG_CYCA0L = 0x15ee;
-    VDP2_REG_CYCA0U = 0x44ee;
-    vdp_disp_on();
 
     char fw_version[32];
     s_get_fw_version(fw_version, sizeof(fw_version));

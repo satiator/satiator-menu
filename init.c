@@ -25,6 +25,10 @@ void sysinit(void) {
    bios_change_scu_interrupt_mask(0xFFFFFFFF, 0xFFFFFFFF);
 
    vdp_init(RES_320x224);
+   VDP2_REG_CYCA0L = 0x15ee;
+   VDP2_REG_CYCA0U = 0x44ee;
+   vdp_disp_on();
+
    per_init();
 
    // If DSP is running, stop it
