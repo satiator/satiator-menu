@@ -124,6 +124,9 @@ void main_menu(void) {
 
     while (1) {
         int entry = menu_picklist(top_menu_options, sizeof(top_menu_options)/sizeof(*top_menu_options), "Satiator");
+        if (entry == -1)
+            continue;
+
         void (*submenu)(void) = top_menu_options[entry].priv;
         submenu();
     }
