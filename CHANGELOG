@@ -1,3 +1,15 @@
+# v54 2020-10-20
+
+## Fixed
+
+- Fix hang if pressing C on the main menu.
+
+## Improved
+
+- Action Replay writing is faster when less has changed.
+- Some AR Flash chips are faster too.
+- Provide better error messages if Flash can't be initialised.
+
 # v53 2020-10-19
 
 ## Fixed
