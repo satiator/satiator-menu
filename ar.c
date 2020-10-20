@@ -114,6 +114,10 @@ static void flash_flash_ar(void) {
     int file_size = s_seek(fd, 0, 2);
     s_seek(fd, 0, 0);
 
+    if (file_size > (2*flash_info.page_size * flash_info.num_pages)) {
+        menu_error("Action Replay", "Firmware too big for Flash");
+        return;
+    }
 
     uint8_t buf[S_MAXBUF], empty[S_MAXBUF];
     int write_size = S_MAXBUF;
