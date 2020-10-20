@@ -13,9 +13,24 @@ static int init_flash(void) {
         return 1;
 
     int ret = ar_init_flash_io(&flash_info);
+    char msg_buf[64];
+    uint16_t vid, pid;
     if (ret != IAPETUS_ERR_OK) {
-        menu_error("AR cartridge", "Couldn't initialise flash IO, is the cart seated properly?");
-        return 0;
+        switch (ret) {
+            case IAPETUS_ERR_UNSUPPORTED:
+                ar_get_product_id(&vid, &pid);
+                sprintf(msg_buf, "Unsupported Flash ID %04x:%04x", vid, pid);
+                menu_error("Action Replay", msg_buf);
+                return 0;
+
+            case IAPETUS_ERR_HWNOTFOUND:
+                menu_error("Action Replay", "No AR cart found!");
+                return 0;
+
+            default:
+                menu_error("Action Replay", "Unknown error");
+                return 0;
+        }
     }
 
     flash_inited = 1;
