@@ -7,7 +7,7 @@ build:
         - "rm -rf iapetus-build newlib-build"
         - "make clean"
         - "make VERSION=$CI_COMMIT_REF_SLUG"
-        - "cd out; NUM=$(printf %06d ${CI_COMMIT_REF_SLUG}); zip satiator_menu${NUM}.zip menu.bin; mv satiator_menu${NUM}.zip .."
+        - "cd out; NUM=$(if [ "${CI_COMMIT_REF_SLUG}" -eq "${CI_COMMIT_REF_SLUG}" ]; then; printf %06d ${CI_COMMIT_REF_SLUG}; else; echo ${CI_COMMIT_REF_SLUG}; fi); zip satiator_menu${NUM}.zip menu.bin; mv satiator_menu${NUM}.zip .."
     artifacts:
         expire_in: 100 years
         paths:
