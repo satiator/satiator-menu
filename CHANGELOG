@@ -1,3 +1,10 @@
+# v55
+
+## Improved
+
+- Avoid changing clock on startup; avoids a TV resync
+- Messageboxes are less ugly and wrap text
+
 # v54 2020-10-20
 
 ## Fixed
