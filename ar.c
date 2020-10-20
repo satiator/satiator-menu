@@ -118,8 +118,8 @@ static void flash_flash_ar(void) {
     uint8_t buf[S_MAXBUF], empty[S_MAXBUF];
     int write_size = S_MAXBUF;
     int blocks = (file_size + write_size - 1) / write_size;
-    int pages_per = write_size / flash_info.page_size;
     int page_words = write_size / 2;
+    int pages_per = page_words / flash_info.page_size;
     volatile u16 *write_ptr = AR_FLASH_ADDR;
 
     memset(empty, 0xff, sizeof(empty));
