@@ -75,24 +75,7 @@ static void flash_erase_ar(void) {
         return;
 
     menu_progress_begin("Erasing...", flash_info.num_pages);
-
-    uint16_t *erase_ptr = (void*)AR_FLASH_ADDR;
-
-    for (int page=0; page<flash_info.num_pages; page++) {
-        menu_progress_update(page);
-
-        int is_clear = 1;
-        for (int word=0; word<flash_info.page_size/2; word++) {
-            if (erase_ptr[word] != 0xffff) {
-                is_clear = 0;
-                break;
-            }
-        }
-        if (!is_clear)
-            ar_erase_flash(&flash_info, erase_ptr, 1);
-
-        erase_ptr += flash_info.page_size/2;
-    }
+    ar_erase_flash_all(&flash_info);
     menu_progress_complete();
 }
 
