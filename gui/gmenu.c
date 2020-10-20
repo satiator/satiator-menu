@@ -18,6 +18,36 @@ int asprintf(char **strp, const char *fmt, ...);
 #define NBG1_MAP 1
 static volatile uint16_t *char_map = (void*)(VDP2_RAM + (NBG1_MAP * 0x2000));
 
+static int wrap_text(char *text, int wrap_len, int *max_length) {
+    int n_lines = 1;
+    char *p = text;
+
+    if (max_length)
+        *max_length = 0;
+
+    while (strlen(p) > wrap_len) {
+        char *cut = p + wrap_len;
+        while (cut > p) {
+            if (*cut == ' ') {
+                *cut = '\0';
+                if (max_length && (cut-p) > *max_length)
+                    *max_length = cut-p;
+                p = cut+1;
+                n_lines++;
+                break;
+            }
+            cut--;
+        }
+        if (cut == p)
+            break;
+    }
+
+    if (max_length && strlen(p) > *max_length)
+        *max_length = strlen(p);
+
+    return n_lines;
+}
+
 static int update_accel(int *accel) {
     int v = (*accel)++;
     if (!v)
@@ -287,13 +317,36 @@ move:
 }
 
 void menu_error(const char *title, const char *message) {
+    char *wrapped = strdup(message);
+    int max_line_length;
+    int n_lines = wrap_text(wrapped, 24, &max_line_length);
+    int border_cells = 1;
+
+    max_line_length += 2*border_cells;
+    if (strlen(title) > max_line_length)
+        max_line_length = strlen(title);
+
+    int height_cells = n_lines + 1 + border_cells;
+    int width_cells = max_line_length;
+
     int width, height;
     vdp_get_scr_width_height(&width, &height);
+
+    int x0 = (width - 8*width_cells) / 2;
+    int y0 = (height - 8*height_cells) / 2;
+
     vdp_clear_screen(&main_font);
     gui_window_init();
-    gui_window_draw(8*3, 8*5, width-8*5, height-8*7, TRUE, 0, RGB16(26, 26, 25) | 0x8000);
-    vdp_print_text(&main_font, 8*3+6, 8*5+4, 0xf, title);
-    vdp_print_text(&main_font, 8*3+14, 8*5+20, 0x10, message);
+    gui_window_draw(x0-6, y0-4, 8*width_cells+12, 8*height_cells+8+4, TRUE, 0, RGB16(26, 26, 25) | 0x8000);
+    vdp_print_text(&main_font, x0, y0, 0xf, title);
+
+    char *p = wrapped;
+    for (int i=0; i<n_lines; i++) {
+        vdp_print_text(&main_font, x0 + 8*border_cells, y0 + 8*border_cells + 8 + i*8, 0x10, p);
+        p += strlen(p) + 1;
+    }
+
+    free(wrapped);
 
     for (;;) {
         vdp_vsync();
