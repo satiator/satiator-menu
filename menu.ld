@@ -27,6 +27,9 @@ SECTIONS {
         *(.data);
         *(.data.*);
         __load_end = .;
+    } >work_low
+
+    .noload : {
         *(.bss);
         *(.bss.*);
         *(COMMON);

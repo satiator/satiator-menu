@@ -54,7 +54,7 @@ out/menu.bin: ip.bin out/menu_code.bin
 	cat $^ > $@
 
 out/%_code.bin: out/%.elf
-	$(OBJCOPY) -O binary $< $@
+	$(OBJCOPY) -O binary -R .noload $< $@
 
 out/menu.elf: menu.ld $(OBJS) $(IAPETUS_LIBDIR)/libiapetus.a $(NEWLIB_LIBDIR)/libc-nosys.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -T menu.ld -Wl,-Map=out/menu.map $(OBJS) -liapetus -lc-nosys -lgcc
