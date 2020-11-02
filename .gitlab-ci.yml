@@ -25,4 +25,4 @@ deploy:
         - c2-maker
     script:
       - 'ln -sf satiator_menu*.zip latest.zip'
-      - 'rsync -l -e "ssh -i $SSH_DEPLOY_KEY" latest.zip satiator_menu*.zip CHANGELOG web-deploy@info.satiator.net:menu/'
+      - 'rsync -l latest.zip satiator_menu*.zip CHANGELOG web-deploy@info.satiator.net:menu/'
