@@ -1,4 +1,5 @@
 build:
+    stage: build
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
     tags:
@@ -15,3 +16,11 @@ build:
             - out/menu.map
             - out/menu.elf
             - satiator_menu*.zip
+
+deploy:
+    stage: deploy
+    only:
+      - /^\d+$/
+    script:
+        'ln -sf satiator_menu*.zip latest.zip'
+        'rsync -l -e "ssh -i $SSH_DEPLOY_KEY" latest.zip satiator_menu*.zip CHANGELOG web-deploy@info.satiator.net:menu/'
