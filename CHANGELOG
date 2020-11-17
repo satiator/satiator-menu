@@ -1,3 +1,10 @@
+# v56
+
+## Fixed
+
+- Support AR carts that have older SST Flash chips. These do not respond to the
+    JEDEC standard flash ID read command, which led to them not being recognised.
+
 # v55
 
 ## Improved
