@@ -1,6 +1,13 @@
+# v57
+
+## Improved
+
+- Support AR carts with an SST 29LE020 flash chip. Weirdly, this is a 3.3V
+    chip, but still appears in some carts.
+
 # v56
 
-## Fixed
+## Improved
 
 - Support AR carts that have older SST Flash chips. These do not respond to the
     JEDEC standard flash ID read command, which led to them not being recognised.
