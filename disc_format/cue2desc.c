@@ -48,6 +48,11 @@ typedef enum {
     e_bad_out_file,
 } cue2desc_error_t;
 
+typedef enum {
+    df_binary = 0,
+    df_wave,
+} data_format_t;
+
 typedef struct {
     uint8_t track, index, q_mode;
     uint32_t start, length;
@@ -60,6 +65,7 @@ int cur_fileindex;
 uint32_t cur_filesize;
 uint8_t cur_track, cur_q_mode;
 uint16_t cur_secsize;
+data_format_t cur_data_format;
 segment_t *segments;
 char **filenames;
 int n_filenames;
@@ -187,8 +193,12 @@ static cue2desc_error_t handle_file(char *params) {
 
     cur_filesize = st.st_size;
 
-    if (strcmp(mode, "BINARY")) {
-        cdparse_set_error("Bad file mode '%s' (need BINARY)", mode);
+    if (!strcmp(mode, "BINARY")) {
+        cur_data_format = df_binary;
+    } else if (!strcmp(mode, "WAVE")) {
+        cur_data_format = df_wave;
+    } else {
+        cdparse_set_error("Bad file mode '%s' (need BINARY or WAVE)", mode);
         return e_bad_cue_file;
     }
 
@@ -215,9 +225,17 @@ static cue2desc_error_t handle_track(char *params) {
     }
 
     if (!strcmp(s_mode, "MODE1/2048")) {
+        if (cur_data_format == df_wave) {
+            cdparse_set_error("Encountered track mode '%s' for WAVE data format", s_mode);
+            return e_bad_cue_file;
+        }
         cur_q_mode = 0x41;
         cur_secsize = 2048;
     } else if (!strcmp(s_mode, "MODE1/2352") || !strcmp(s_mode, "MODE2/2352")) {
+        if (cur_data_format == df_wave) {
+            cdparse_set_error("Encountered track mode '%s' for WAVE data format", s_mode);
+            return e_bad_cue_file;
+        }
         cur_q_mode = 0x41;
         cur_secsize = 2352;
     } else if (!strcmp(s_mode, "AUDIO")) {
@@ -228,6 +246,87 @@ static cue2desc_error_t handle_track(char *params) {
         return e_bad_cue_file;
     }
 
+    return e_ok;
+}
+
+static cue2desc_error_t handle_wave_track(segment_t *seg) {
+    const char* fname = filenames[seg->filename_index];
+    FILE* f = fopen(fname, "rb");
+    if (!f) {
+        cdparse_set_error("Could not open WAVE file '%s'", fname);
+        return e_bad_track_file;
+    }
+    uint32_t buf;
+    fread(&buf, sizeof(buf), 1, f);
+    if (memcmp(&buf, "RIFF", 4)) {
+        cdparse_set_error("Invalid RIFF header in file '%s': %X", fname, buf);
+        return e_bad_track_file;
+    }
+    fread(&buf, sizeof(buf), 1, f); // remaining data length (little-endian)
+    fread(&buf, sizeof(buf), 1, f);
+    if (memcmp(&buf, "WAVE", 4)) {
+        cdparse_set_error("Invalid WAVE header in file '%s': %X", fname, buf);
+        return e_bad_track_file;
+    }
+    fread(&buf, sizeof(buf), 1, f);
+    if (memcmp(&buf, "fmt ", 4)) {
+        cdparse_set_error("Invalid fmt header in file '%s': %X", fname, buf);
+        return e_bad_track_file;
+    }
+    fread(&buf, sizeof(buf), 1, f);
+    uint32_t subchunk_size = htole32(buf);
+    if (subchunk_size != 16) {
+        cdparse_set_error("fmt chunk size in '%s' must be 16 (PCM), not %d", fname, subchunk_size);
+        return e_bad_track_file;
+    }
+    fread(&buf, sizeof(buf), 1, f);
+    uint16_t codec = htole16(buf >> 16);
+    if (codec != 1) {
+        cdparse_set_error("Format of '%s' must be 1 (PCM), not %d", fname, codec);
+        return e_bad_track_file;
+    }
+    uint16_t channels = htole16(buf & 0xFFFF);
+    if (channels != 2) {
+        cdparse_set_error("Channels of '%s' must be 2 (stereo), not %d", fname, channels);
+        return e_bad_track_file;
+    }
+    fread(&buf, sizeof(buf), 1, f);
+    uint32_t samprate = htole32(buf);
+    if (samprate != 44100) {
+        cdparse_set_error("Sample rate of '%s' must be 44100Hz, not %d", fname, samprate);
+        return e_bad_track_file;
+    }
+    fread(&buf, sizeof(buf), 1, f); // byte rate
+    uint32_t byte_rate = htole32(buf);
+    if (byte_rate != 44100 * 2 * 16/8) {
+        cdparse_set_error("Byte rate of '%s' must be 44100*2*16/8, not %d", fname, byte_rate);
+        return e_bad_track_file;
+    }
+    fread(&buf, sizeof(buf), 1, f);
+    uint16_t block_align = htole16(buf >> 16);
+    if (block_align != 2 * 16/8) {
+        cdparse_set_error("Block alignment of '%s' must be 2*16/8, not %d", fname, block_align);
+        return e_bad_track_file;
+    }
+    uint16_t sampdepth = htole16(buf & 0xFFFF);
+    if (sampdepth != 16) {
+        cdparse_set_error("Sample depth of '%s' must be 16-bit, not %d", fname, sampdepth);
+        return e_bad_track_file;
+    }
+    // skip other headers
+    fread(&buf, sizeof(buf), 1, f);
+    while (memcmp(&buf, "data", 4)) {
+        fread(&buf, sizeof(buf), 1, f);
+        fseek(f, htole32(buf), SEEK_CUR);
+        fread(&buf, sizeof(buf), 1, f);
+        if (feof(f)) {
+            cdparse_set_error("Reached end of '%s' while looking for data chunk", fname);
+            return e_bad_track_file;
+        }
+    }
+    fread(&buf, sizeof(buf), 1, f); // data length
+    seg->file_offset += ftell(f); // here's where the actual audio data starts in the file
+    fclose(f);
     return e_ok;
 }
 
@@ -248,6 +347,13 @@ static cue2desc_error_t handle_index(char *params) {
     uint32_t fad = ff + 75*(ss + 60*mm);
     seg->filename_index = cur_fileindex;
     seg->file_offset = fad * cur_secsize;
+
+    if (cur_data_format == df_wave) {
+        cue2desc_error_t result = handle_wave_track(seg);
+        if (result != e_ok) {
+            return result;
+        }
+    }
 
     if (open_seg >= 0) {
         segment_t *open = &segments[open_seg];
