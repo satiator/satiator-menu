@@ -61,6 +61,20 @@ typedef struct {
     uint16_t secsize;
 } segment_t;
 
+typedef struct __attribute__((packed)) {
+    char magic_riff[4];
+    uint32_t riff_size;
+    char magic_wave[4];
+    char magic_fmt[4];
+    uint32_t fmt_size;
+    uint16_t codec;
+    uint16_t channels;
+    uint32_t sample_rate;
+    uint32_t byte_rate;
+    uint16_t block_align;
+    uint16_t bits_per_sample;
+} wave_header_t;
+
 int cur_fileindex;
 uint32_t cur_filesize;
 uint8_t cur_track, cur_q_mode;
@@ -256,76 +270,70 @@ static cue2desc_error_t handle_wave_track(segment_t *seg) {
         cdparse_set_error("Could not open WAVE file '%s'", fname);
         return e_bad_track_file;
     }
-    uint32_t buf;
+    wave_header_t hdr;
+    fread(&hdr, sizeof(hdr), 1, f);
+    hdr.riff_size = htole32(hdr.riff_size);
+    hdr.fmt_size = htole32(hdr.fmt_size);
+    hdr.codec = htole16(hdr.codec);
+    hdr.channels = htole16(hdr.channels);
+    hdr.sample_rate = htole32(hdr.sample_rate);
+    hdr.byte_rate = htole32(hdr.byte_rate);
+    hdr.block_align = htole16(hdr.block_align);
+    hdr.bits_per_sample = htole16(hdr.bits_per_sample);
+    if (memcmp(hdr.magic_riff, "RIFF", 4)) {
+        cdparse_set_error("Invalid RIFF header in file '%s': %.4s", fname, hdr.magic_riff);
+        return e_bad_track_file;
+    }
+    if (memcmp(hdr.magic_wave, "WAVE", 4)) {
+        cdparse_set_error("Invalid WAVE header in file '%s': %.4s", fname, hdr.magic_wave);
+        return e_bad_track_file;
+    }
+    if (memcmp(hdr.magic_fmt, "fmt ", 4)) {
+        cdparse_set_error("Invalid fmt header in file '%s': %.4s", fname, hdr.magic_fmt);
+        return e_bad_track_file;
+    }
+    if (hdr.fmt_size != 16) {
+        cdparse_set_error("fmt size in '%s' must be 16 (PCM), not %d", fname, hdr.fmt_size);
+        return e_bad_track_file;
+    }
+    if (hdr.codec != 1) {
+        cdparse_set_error("Format of '%s' must be 1 (PCM), not %d", fname, hdr.codec);
+        return e_bad_track_file;
+    }
+    if (hdr.channels != 2) {
+        cdparse_set_error("Channels of '%s' must be 2 (stereo), not %d", fname, hdr.channels);
+        return e_bad_track_file;
+    }
+    if (hdr.sample_rate != 44100) {
+        cdparse_set_error("Sample rate of '%s' must be 44100Hz, not %d", fname, hdr.sample_rate);
+        return e_bad_track_file;
+    }
+    if (hdr.byte_rate != 44100 * 2 * 16/8) {
+        cdparse_set_error("Byte rate of '%s' must be 44100*2*16/8, not %d", fname, hdr.byte_rate);
+        return e_bad_track_file;
+    }
+    if (hdr.block_align != 2 * 16/8) {
+        cdparse_set_error("Block alignment of '%s' must be 2*16/8, not %d", fname, hdr.block_align);
+        return e_bad_track_file;
+    }
+    if (hdr.bits_per_sample != 16) {
+        cdparse_set_error("Sample depth of '%s' must be 16-bit, not %d", fname, hdr.bits_per_sample);
+        return e_bad_track_file;
+    }
+    // { chunk name, chunk length }
+    uint32_t buf[2];
     fread(&buf, sizeof(buf), 1, f);
-    if (memcmp(&buf, "RIFF", 4)) {
-        cdparse_set_error("Invalid RIFF header in file '%s': %X", fname, buf);
-        return e_bad_track_file;
-    }
-    fread(&buf, sizeof(buf), 1, f); // remaining data length (little-endian)
-    fread(&buf, sizeof(buf), 1, f);
-    if (memcmp(&buf, "WAVE", 4)) {
-        cdparse_set_error("Invalid WAVE header in file '%s': %X", fname, buf);
-        return e_bad_track_file;
-    }
-    fread(&buf, sizeof(buf), 1, f);
-    if (memcmp(&buf, "fmt ", 4)) {
-        cdparse_set_error("Invalid fmt header in file '%s': %X", fname, buf);
-        return e_bad_track_file;
-    }
-    fread(&buf, sizeof(buf), 1, f);
-    uint32_t subchunk_size = htole32(buf);
-    if (subchunk_size != 16) {
-        cdparse_set_error("fmt chunk size in '%s' must be 16 (PCM), not %d", fname, subchunk_size);
-        return e_bad_track_file;
-    }
-    fread(&buf, sizeof(buf), 1, f);
-    uint16_t codec = htole16(buf >> 16);
-    if (codec != 1) {
-        cdparse_set_error("Format of '%s' must be 1 (PCM), not %d", fname, codec);
-        return e_bad_track_file;
-    }
-    uint16_t channels = htole16(buf & 0xFFFF);
-    if (channels != 2) {
-        cdparse_set_error("Channels of '%s' must be 2 (stereo), not %d", fname, channels);
-        return e_bad_track_file;
-    }
-    fread(&buf, sizeof(buf), 1, f);
-    uint32_t samprate = htole32(buf);
-    if (samprate != 44100) {
-        cdparse_set_error("Sample rate of '%s' must be 44100Hz, not %d", fname, samprate);
-        return e_bad_track_file;
-    }
-    fread(&buf, sizeof(buf), 1, f); // byte rate
-    uint32_t byte_rate = htole32(buf);
-    if (byte_rate != 44100 * 2 * 16/8) {
-        cdparse_set_error("Byte rate of '%s' must be 44100*2*16/8, not %d", fname, byte_rate);
-        return e_bad_track_file;
-    }
-    fread(&buf, sizeof(buf), 1, f);
-    uint16_t block_align = htole16(buf >> 16);
-    if (block_align != 2 * 16/8) {
-        cdparse_set_error("Block alignment of '%s' must be 2*16/8, not %d", fname, block_align);
-        return e_bad_track_file;
-    }
-    uint16_t sampdepth = htole16(buf & 0xFFFF);
-    if (sampdepth != 16) {
-        cdparse_set_error("Sample depth of '%s' must be 16-bit, not %d", fname, sampdepth);
-        return e_bad_track_file;
-    }
-    // skip other headers
-    fread(&buf, sizeof(buf), 1, f);
-    while (memcmp(&buf, "data", 4)) {
-        fread(&buf, sizeof(buf), 1, f);
-        fseek(f, htole32(buf), SEEK_CUR);
+    // skip other chunks until we find "data"
+    while (memcmp(&buf[0], "data", 4)) {
+        fseek(f, htole32(buf[1]), SEEK_CUR);
         fread(&buf, sizeof(buf), 1, f);
         if (feof(f)) {
             cdparse_set_error("Reached end of '%s' while looking for data chunk", fname);
             return e_bad_track_file;
         }
     }
-    fread(&buf, sizeof(buf), 1, f); // data length
-    seg->file_offset += ftell(f); // here's where the actual audio data starts in the file
+    // here's where the actual audio data starts in the file
+    seg->file_offset += ftell(f);
     fclose(f);
     return e_ok;
 }
