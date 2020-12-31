@@ -1,3 +1,11 @@
+# v58
+
+## Fixed
+
+- Corrected region free booting to work with BIOS 1.00. As region-free is now
+    always enabled, the previous code would just hang after fading out and before
+    the SEGA logo.
+
 # v57
 
 ## Improved
