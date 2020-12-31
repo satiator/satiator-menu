@@ -99,7 +99,12 @@ static int emulate_bios_loadcd_read(void)
 
    while (!(CDB_REG_HIRQ & HIRQ_EHST)) {}
 
-   *(uint16_t*)0x60003a0 = 1;
+   const char *bios_version_string = (char*)0x800;  // typically BTR_1.00 or BTR_1.01
+
+   if (bios_version_string[7] == '0')
+      *(uint16_t*)0x6000380 = 1;       // 1.00
+   else
+      *(uint16_t*)0x60003a0 = 1;       // 1.01
 
    return 0;
 }
