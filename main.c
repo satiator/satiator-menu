@@ -54,6 +54,9 @@ void launch_game(const char *filename) {
         case BOOT_BAD_SECURITY_CODE:
             error = "Bad security code. Bad image?";
             break;
+        case BOOT_UNRECOGNISED_BIOS:
+            error = "Unrecognised BIOS version! Contact Abrasive info@satiator.net";
+            break;
     }
     menu_error("Boot failed!", error);
 }

@@ -6,6 +6,7 @@
 
 #include <string.h>
 #include <iapetus.h>
+#include "jhloader.h"
 
 static int emulate_bios_loadcd_init(void) {
    *(uint32_t*)0x6000278 = 0;
@@ -99,12 +100,19 @@ static int emulate_bios_loadcd_read(void)
 
    while (!(CDB_REG_HIRQ & HIRQ_EHST)) {}
 
-   const char *bios_version_string = (char*)0x800;  // typically BTR_1.00 or BTR_1.01
+   // we need to set a flag, but it's in different places in different BIOS versions
+   uint16_t *read_flag_a = (uint16_t*)0x06000380;
+   uint16_t *read_flag_b = (uint16_t*)0x060003a0;
 
-   if (bios_version_string[7] == '0')
-      *(uint16_t*)0x6000380 = 1;       // 1.00
+   uint16_t **read_flag_ptr_a = (uint16_t**)0x2174;
+   uint16_t **read_flag_ptr_b = (uint16_t**)0x2a04;
+
+   if (read_flag_a == *read_flag_ptr_a)
+      *read_flag_a = 1;
+   else if (read_flag_b == *read_flag_ptr_b)
+      *read_flag_b = 1;
    else
-      *(uint16_t*)0x60003a0 = 1;       // 1.01
+       return BOOT_UNRECOGNISED_BIOS;
 
    return 0;
 }
