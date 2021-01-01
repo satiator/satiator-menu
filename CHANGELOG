@@ -1,3 +1,13 @@
+# v59
+
+## Fixed
+
+- The region free patch in v58 caused booting to fail on some consoles; this
+    has been fixed. The issue was that a boot variable is in two different places
+    depending on BIOS version. I had assumed the split was across v1.00/v1.01 in
+    the original patch. This new version checks directly where the variable
+    actually is, ignoring the version, so it should work on all systems.
+
 # v58
 
 ## Fixed
