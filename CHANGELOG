@@ -1,3 +1,9 @@
+# v60
+
+## Fixed
+
+- Fixed AR Flash detection for AT29C010A Flash chips, which needed a delay
+
 # v59
 
 ## Fixed
