@@ -119,11 +119,14 @@ static void flash_flash_ar(void) {
         return;
     }
 
-    uint8_t buf[S_MAXBUF], empty[S_MAXBUF];
-    int write_size = S_MAXBUF;
-    int blocks = (file_size + write_size - 1) / write_size;
-    int page_words = write_size / 2;
-    int pages_per = page_words / flash_info.page_size;
+    int block_bytes = flash_info.page_size * 2;
+    if (block_bytes < S_MAXBUF)
+        block_bytes = S_MAXBUF;
+
+    uint8_t buf[block_bytes], empty[block_bytes];
+    int blocks = (file_size + block_bytes - 1) / block_bytes;
+    int block_words = block_bytes / 2;
+    int pages_per = block_words / flash_info.page_size;
     volatile u16 *write_ptr = AR_FLASH_ADDR;
 
     memset(empty, 0xff, sizeof(empty));
@@ -133,12 +136,13 @@ static void flash_flash_ar(void) {
     for (int i=0; i<blocks; i++) {
         menu_progress_update(i);
 
-        s_read(fd, buf, write_size);
+        for (int nread = 0; nread < block_bytes; nread += S_MAXBUF)
+            s_read(fd, &buf[nread], S_MAXBUF);
 
         int matches = 1;
         int empty = 1;
         uint16_t *bptr = (void*)buf;
-        for (volatile uint16_t *rptr = write_ptr; rptr < write_ptr+page_words; rptr++) {
+        for (volatile uint16_t *rptr = write_ptr; rptr < write_ptr+block_words; rptr++) {
             if (*rptr != 0xffff)
                 empty = 0;
             if (*rptr != *bptr++)
@@ -153,7 +157,7 @@ static void flash_flash_ar(void) {
             ar_write_flash(&flash_info, write_ptr, (void*)buf, pages_per);
 
             char msg_buf[64];
-            for (int j=0; j<page_words; j++) {
+            for (int j=0; j<block_words; j++) {
                 u16 got = write_ptr[j];
                 u16 want = ((u16*)buf)[j];
                 if (got != want) {
@@ -164,7 +168,7 @@ static void flash_flash_ar(void) {
             }
         }
 
-        write_ptr += page_words;
+        write_ptr += block_words;
     }
     menu_progress_complete();
 
