@@ -47,7 +47,7 @@ static void flash_backup_ar(void) {
         return;
     }
 
-    int length = flash_info.page_size * flash_info.num_pages;
+    int length = flash_info.page_size * flash_info.num_pages * 2;
     int done = 0;
     uint8_t *ptr = (void*)AR_FLASH_ADDR;
 

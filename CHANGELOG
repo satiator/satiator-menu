@@ -3,6 +3,7 @@
 ## Fixed
 
 - Fixed AR Flash detection for AT29C010A Flash chips, which needed a delay
+- When backing up an AR cart, length was calculated wrong, and only the first half backed up
 
 # v59
 
