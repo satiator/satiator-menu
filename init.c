@@ -46,6 +46,8 @@ void restore_vdp_mem(void) {
 
 extern char _load_start, _load_end, _bss_end, _free_ram_end;
 
+void main_menu(void);
+
 void start(void) __attribute__((section(".start")));
 void start(void) {
     // the BIOS only reads 0x1000 bytes when we begin. read the

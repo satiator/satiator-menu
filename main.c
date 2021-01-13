@@ -21,6 +21,8 @@ int image_file_filter(file_ent *entry) {
     return 0;
 }
 
+void restore_vdp_mem(void);
+
 void launch_game(const char *filename) {
     dbgprintf("Loading ISO: '%s'\n", filename);
     int ret = image2desc(filename, "out.desc");
