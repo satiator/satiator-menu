@@ -85,6 +85,9 @@ int s_emulate(const char *filename);
 int s_mode(enum satiator_mode mode);
 int s_get_fw_version(char *buf, int buflen);
 
+// See if there is a cartridge in the top slot providing Satiator services
+satiator_cart_header_t *s_find_cartridge(void);
+
 #define S_MAXBUF    2048
 
 

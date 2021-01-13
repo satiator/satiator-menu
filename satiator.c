@@ -289,3 +289,19 @@ int s_get_fw_version(char *buf, int buflen) {
 }
 
 // }}}
+
+// Cartridge API {{{
+satiator_cart_header_t *s_find_cartridge(void) {
+    uint8_t *ptr = (void*)0x02000000;
+    uint8_t *end = ptr + 1048576;
+
+    while (ptr < end) {
+        if (!memcmp(ptr, "SatiatorCart", 12))
+            return (void*)ptr;
+
+        ptr += 0x100;
+    }
+
+    return NULL;
+}
+// }}}

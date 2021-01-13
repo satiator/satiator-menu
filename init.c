@@ -31,9 +31,8 @@ void sysinit(void) {
 
    per_init();
 
-   // If DSP is running, stop it
-   if (dsp_is_exec())
-       dsp_stop();
+   // stop the FRT
+   SH2_REG_TIER = 0;
 
    if (interrupt_get_level_mask() > 0x7)
       interrupt_set_level_mask(0x7);

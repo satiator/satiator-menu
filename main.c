@@ -31,6 +31,10 @@ void launch_game(const char *filename) {
 
     fadeout(0x20);
 
+    satiator_cart_header_t *cart = s_find_cartridge();
+    if (cart && cart->header_version >= 1)
+        cart->install_soft_reset_hook();
+
     restore_vdp_mem();
 
     s_emulate("out.desc");
@@ -123,6 +127,7 @@ const file_ent top_menu_options[] = {
 
 void main_menu(void) {
     menu_init();
+    s_chdir("\\");
     image_menu();
 
     while (1) {
