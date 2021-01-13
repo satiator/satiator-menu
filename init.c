@@ -44,13 +44,13 @@ void restore_vdp_mem(void) {
     memcpy((void*)VDP1_RAM, vdp1_stash, sizeof(vdp1_stash));
 }
 
-extern char _load_start, _load_end, _bss_end, _free_ram_end;
+extern char _load_start, _load_end, _load_sectors, _bss_end, _free_ram_end;
 
 void start(void) __attribute__((section(".start")));
 void start(void) {
     // the BIOS only reads 0x1000 bytes when we begin. read the
     // lot and zero BSS
-    int nsec = ((&_load_end-&_load_start-1) / 0x800) + 1;
+    int nsec = (int)&_load_sectors;
     bios_get_mpeg_rom(2, nsec, (u32)&_load_start);
     memset(&_load_end, 0, &_free_ram_end - &_load_end);
 
