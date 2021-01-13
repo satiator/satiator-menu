@@ -26,6 +26,7 @@ SECTIONS {
         *(.data);
         *(.data.*);
         __load_end = .;
+        __load_sectors = (__load_end - __load_start - 1)/0x800 + 1;
     } >work_low
 
     .noload : {
@@ -37,6 +38,4 @@ SECTIONS {
         __free_ram_begin = .;
         __free_ram_end = __load_start + 0x100000;
     } >work_low
-
-    __load_sectors = (__load_end - __load_start - 1)/0x800 + 1;
 }
