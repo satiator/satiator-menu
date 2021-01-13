@@ -76,4 +76,18 @@ typedef struct {
 
 } __attribute__((packed)) seg_desc_t;
 
+// Satiator cart descriptor header, version 1
+// This is written somewhere on a top slot Flash cart (eg. Action Replay) on a 0x100 byte boundary
+// All offsets are relative to the start of this header
+typedef struct {
+    uint8_t signature[12];  // ASCII: "SatiatorCart"
+    int32_t header_version; // 1 for this struct
+    uint8_t version_str[32];// ASCII
+
+    // Jumping to this address should be equivalent to booting the cart directly
+    void (*bootcode)(void);
+
+    void (*install_soft_reset_hook)(void);
+} __attribute__((packed)) satiator_cart_header_t;
+
 #endif // _SATISFIER_H
