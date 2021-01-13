@@ -288,6 +288,18 @@ int s_get_fw_version(char *buf, int buflen) {
     return buflen;
 }
 
+int s_get_bootloader_version(uint32_t *version) {
+    simplecall(c_info, i_bootloader_version, 0, 0);
+    buffer_read(version, 4);
+    return 0;
+}
+
+int s_get_serial_number(uint32_t *serial) {
+    simplecall(c_info, i_serial_number, 0, 0);
+    buffer_read(serial, 4);
+    return 0;
+}
+
 // }}}
 
 // Cartridge API {{{
