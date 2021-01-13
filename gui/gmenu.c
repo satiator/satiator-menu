@@ -227,7 +227,6 @@ int menu_picklist(const file_ent *entries, int n_entries, const char *caption) {
     vdp_get_scr_width_height(&width, &height);
 
     int n_rows = (height - margin_top - margin_bot) / FONT_HEIGHT;
-    int n_cols = (width - margin_left - margin_right) / FONT_WIDTH;
 
     int selected = 0;
 
