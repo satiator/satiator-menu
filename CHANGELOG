@@ -1,9 +1,18 @@
 # v60
 
+## New features
+
+- Reset to menu on A+B+C+Start. This requires an AR cart running patched firmware 3, and Satiator firmware version 154.
+
 ## Fixed
 
 - Fixed AR Flash detection for AT29C010A Flash chips, which needed a delay
 - When backing up an AR cart, length was calculated wrong, and only the first half backed up
+- Revert to requesting a BIOS clock change on startup; this causes flicker, but is the easiest way to get everything neat and tidy on an A+B+C+Start reset
+
+## Known issues
+
+- The VDP menu workaround which fixes the Croc missing head bug (amongst others) will not work after an A+B+C+Start reset.
 
 # v59
 
