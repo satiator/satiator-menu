@@ -77,6 +77,8 @@ static void flash_erase_ar(void) {
     menu_progress_begin("Erasing...", flash_info.num_pages);
     ar_erase_flash_all(&flash_info);
     menu_progress_complete();
+
+    menu_error("Action Replay", "Erasing successfull.");
 }
 
 
