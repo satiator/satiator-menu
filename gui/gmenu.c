@@ -71,11 +71,33 @@ struct {
     int acc_l, acc_r, acc_u, acc_d;
 } pad_state;
 
+static uint16_t get_pressed_buttons(void) {
+    // Get pressed buttons on any/all controllers
+    uint16_t pressed = 0;
 
-static int update_button_bit(int bit, int *accel) {
+    for (int i=0; i<MAX_PERIPHERALS; i++) {
+        if (per[i].id == 0)
+            break;
+
+        switch (per[i].id >> 4) {
+            case 3: // keyboard type
+            case 0: // digital pad
+            case 1: // analog type
+                pressed |= per[i].but_push;
+
+            default:
+                break;
+        }
+    }
+
+
+    return pressed;
+}
+
+static int update_button_bit(uint16_t but_push, int bit, int *accel) {
     int pressed = 0;
 
-    if (per[0].but_push & bit)
+    if (but_push & bit)
         pressed = update_accel(accel);
     else
         *accel = 0;
@@ -85,15 +107,22 @@ static int update_button_bit(int bit, int *accel) {
     return 0;
 }
 
+
 static int pad_poll_buttons(void) {
     int out = 0;
 
-    out |= update_button_bit(PAD_UP, &pad_state.acc_u);
-    out |= update_button_bit(PAD_DOWN, &pad_state.acc_d);
-    out |= update_button_bit(PAD_L, &pad_state.acc_l);
-    out |= update_button_bit(PAD_R, &pad_state.acc_r);
+    static uint16_t last_but_push = 0;
+    uint16_t but_push = get_pressed_buttons();
 
-    out |= per[0].but_push_once & (PAD_A|PAD_B|PAD_C|PAD_X|PAD_Y|PAD_Z|PAD_START);
+    out |= update_button_bit(but_push, PAD_UP, &pad_state.acc_u);
+    out |= update_button_bit(but_push, PAD_DOWN, &pad_state.acc_d);
+    out |= update_button_bit(but_push, PAD_L, &pad_state.acc_l);
+    out |= update_button_bit(but_push, PAD_R, &pad_state.acc_r);
+
+    uint16_t but_push_once = but_push & ~last_but_push;
+    last_but_push = but_push;
+
+    out |= but_push_once & (PAD_A|PAD_B|PAD_C|PAD_X|PAD_Y|PAD_Z|PAD_START);
 
     return out;
 }
@@ -346,7 +375,7 @@ void menu_error(const char *title, const char *message) {
 
     for (;;) {
         vdp_vsync();
-        if (per[0].but_push_once)
+        if (pad_poll_buttons())
             break;
     }
 }
