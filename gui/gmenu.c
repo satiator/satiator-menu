@@ -116,8 +116,8 @@ static int pad_poll_buttons(void) {
 
     out |= update_button_bit(but_push, PAD_UP, &pad_state.acc_u);
     out |= update_button_bit(but_push, PAD_DOWN, &pad_state.acc_d);
-    out |= update_button_bit(but_push, PAD_L, &pad_state.acc_l);
-    out |= update_button_bit(but_push, PAD_R, &pad_state.acc_r);
+    out |= update_button_bit(but_push, PAD_LEFT, &pad_state.acc_l);
+    out |= update_button_bit(but_push, PAD_RIGHT, &pad_state.acc_r);
 
     uint16_t but_push_once = but_push & ~last_but_push;
     last_but_push = but_push;
@@ -291,7 +291,7 @@ again:
 
         vdp_vsync();
         int buttons = pad_poll_buttons();
-        if (buttons & (PAD_UP | PAD_DOWN | PAD_L | PAD_R))
+        if (buttons & (PAD_UP | PAD_DOWN | PAD_LEFT | PAD_RIGHT))
             write_char(selected, 2, ' ');
 
         if (buttons & PAD_UP) {
@@ -302,21 +302,21 @@ again:
             selected++;
             goto move;
         }
-        if (buttons & PAD_L) {
+        if (buttons & PAD_LEFT) {
             selected -= n_rows;
             goto move;
         }
-        if (buttons & PAD_R) {
+        if (buttons & PAD_RIGHT) {
             selected += n_rows;
             goto move;
         }
 
-        if (buttons & PAD_A) {
+        if (buttons & (PAD_A|PAD_C)) {
             erase();
             return selected;
         }
 
-        if (buttons & PAD_C) {
+        if (buttons & PAD_B) {
             erase();
             return -1;
         }
