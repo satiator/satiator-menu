@@ -1,3 +1,16 @@
+# v62
+
+## Fixed
+
+- When multiple controllers are connected, any of them can control the menu.
+- Controls are changed to be closer to the Saturn design language:
+    - D-pad left and right are page up/down
+    - B is cancel
+    - A and C are select
+- Add a completion message to AR erase function
+
+With thanks to ShadowofBob for the control & erase patches!
+
 # v61
 
 ## New features
