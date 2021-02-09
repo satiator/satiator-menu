@@ -2,6 +2,7 @@ typedef struct {
     char *name;
     int isdir;
     void *priv;
+    int extra;
 } file_ent;
 
 file_ent * file_list_create(const char *dir, int *entries, int (*filter)(file_ent *entry));

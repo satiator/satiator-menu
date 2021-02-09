@@ -300,6 +300,11 @@ int s_get_serial_number(uint32_t *serial) {
     return 0;
 }
 
+int s_format_sd_card(int flags) {
+    simplecall(c_mkfs, flags, 0xfeed, 0xdeadbeef);
+    return 0;
+}
+
 // }}}
 
 // Cartridge API {{{

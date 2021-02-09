@@ -121,10 +121,87 @@ void image_menu(void) {
     }
 }
 
+const file_ent format_confirm_menu_options[] = {
+    {"No", 0, NULL},
+    {"No", 0, NULL},
+    {"No", 0, NULL},
+    {"No", 0, NULL},
+    {"No", 0, NULL},
+    {"No", 0, NULL},
+    {"No", 0, NULL},
+    {"Yes", 0, 1},
+};
+
+extern uint8_t vdp1_stash[];
+
+void format_confirm(int flags) {
+    int entry = menu_picklist(format_confirm_menu_options, sizeof(format_confirm_menu_options)/sizeof(*format_confirm_menu_options), "Select format_confirm");
+    if (entry == -1)
+        return;
+    if (!format_confirm_menu_options[entry].priv)
+        return;
+
+    menu_progress_begin("Formatting...", 3);
+
+    int menu_size = 0;
+    int fd = s_open("/menu.bin", FA_READ);
+    int ret;
+    uint8_t *p = vdp1_stash;
+    while ((ret = s_read(fd, p, 2048)) > 0) {
+        p += ret;
+        menu_size += ret;
+    }
+    s_close(fd);
+    menu_progress_update(1);
+
+    int mkfs_ret = s_format_sd_card(flags);
+    menu_progress_update(2);
+
+    fd = s_open("/menu.bin", FA_WRITE|FA_CREATE_ALWAYS);
+    p = vdp1_stash;
+    while (menu_size > 0) {
+        int count = menu_size;
+        if (count > 2048)
+            count = 2048;
+        ret = s_write(fd, p, count);
+        if (ret < 0)
+            break;
+        p += count;
+        menu_size -= count;
+    }
+    s_close(fd);
+
+    menu_progress_complete();
+
+    char msg_buf[64];
+
+    if (mkfs_ret != FR_OK)
+        sprintf(msg_buf, "Error %d", mkfs_ret);
+    else
+        sprintf(msg_buf, "Success!");
+
+    menu_error("SD formatting complete", msg_buf);
+}
+
+const file_ent format_menu_options[] = {
+    {"FAT32", 0, &format_confirm, 1},
+    {"exFAT", 0, &format_confirm, 0},
+};
+
+void format_menu(void) {
+    int entry = menu_picklist(format_menu_options, sizeof(format_menu_options)/sizeof(*format_menu_options), "Select format");
+    if (entry == -1)
+        return;
+
+    void (*submenu)(int) = format_menu_options[entry].priv;
+    submenu(format_menu_options[entry].extra);
+}
+
 void ar_menu(void);
 const file_ent top_menu_options[] = {
     {"Browse images", 0, &image_menu},
     {"Action Replay tools", 0, &ar_menu},
+    {"Format SD card", 0, &format_menu},
 };
 
 void main_menu(void) {
