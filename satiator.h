@@ -87,6 +87,7 @@ int s_get_fw_version(char *buf, int buflen);
 int s_get_bootloader_version(uint32_t *version);
 int s_get_serial_number(uint32_t *serial);
 int s_get_sd_latency(uint16_t latency_us[1024], int *errors);
+int s_format_sd_card(int flags);
 
 // See if there is a cartridge in the top slot providing Satiator services
 satiator_cart_header_t *s_find_cartridge(void);
