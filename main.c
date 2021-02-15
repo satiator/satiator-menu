@@ -198,9 +198,11 @@ void format_menu(void) {
 }
 
 void ar_menu(void);
+void diagnostic_menu(void);
 const file_ent top_menu_options[] = {
     {"Browse images", 0, &image_menu},
     {"Action Replay tools", 0, &ar_menu},
+    {"Diagnostics", 0, &diagnostic_menu},
     {"Format SD card", 0, &format_menu},
 };
 

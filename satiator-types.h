@@ -55,6 +55,7 @@ typedef enum {
     i_fw_version = 0,
     i_bootloader_version,
     i_serial_number,
+    i_sd_latency,
 } satisfier_info_cmd_t;
 
 #define C_SEEK_SET  0

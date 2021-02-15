@@ -300,6 +300,13 @@ int s_get_serial_number(uint32_t *serial) {
     return 0;
 }
 
+int s_get_sd_latency(uint16_t latency_us[1024], int *errors) {
+    simplecall(c_info, i_sd_latency, 0, 0);
+    buffer_read(latency_us, 2048);
+    *errors = sat_result[1];
+    return 0;
+}
+
 int s_format_sd_card(int flags) {
     simplecall(c_mkfs, flags, 0xfeed, 0xdeadbeef);
     return 0;
