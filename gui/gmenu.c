@@ -19,31 +19,36 @@ int asprintf(char **strp, const char *fmt, ...);
 static volatile uint16_t *char_map = (void*)(VDP2_RAM + (NBG1_MAP * 0x2000));
 
 static int wrap_text(char *text, int wrap_len, int *max_length) {
-    int n_lines = 1;
-    char *p = text;
+    int n_lines = 0;
+    char *p = strtok(text, "\n");
 
     if (max_length)
         *max_length = 0;
 
-    while (strlen(p) > wrap_len) {
-        char *cut = p + wrap_len;
-        while (cut > p) {
-            if (*cut == ' ') {
-                *cut = '\0';
-                if (max_length && (cut-p) > *max_length)
-                    *max_length = cut-p;
-                p = cut+1;
-                n_lines++;
-                break;
+    while (p) {
+        n_lines++;
+        while (strlen(p) > wrap_len) {
+            char *cut = p + wrap_len;
+            while (cut > p) {
+                if (*cut == ' ') {
+                    *cut = '\0';
+                    if (max_length && (cut-p) > *max_length)
+                        *max_length = cut-p;
+                    p = cut+1;
+                    n_lines++;
+                    break;
+                }
+                cut--;
             }
-            cut--;
+            if (cut == p)
+                break;
         }
-        if (cut == p)
-            break;
-    }
 
-    if (max_length && strlen(p) > *max_length)
-        *max_length = strlen(p);
+        if (max_length && strlen(p) > *max_length)
+            *max_length = strlen(p);
+
+        p = strtok(NULL, "\n");
+    }
 
     return n_lines;
 }
