@@ -14,6 +14,12 @@ jobs:
       with:
         path: satiator-menu
         submodules: true
+    - name: Restore cached toolchain
+      # Restoring before checkout should let files be overwritten if needed while still allowing incremental builds?
+      uses: actions/cache@v2
+      with:
+        path: Saturn-SDK-GCC-SH2
+        key: toolchain
     - name: Check out toolchain
       uses: actions/checkout@v2
       with:
@@ -22,7 +28,6 @@ jobs:
     - name: Build toolchain
       # based on https://github.com/miracoli/Saturn-SDK-GCC-SH2/blob/master/.github/workflows/build.yml
       # manual install of automake 1.16 only required on ubuntu < 20.04
-      # TODO: step takes >15 mins so cache output https://github.com/actions/cache#Skipping-steps-based-on-cache-hit
       run: |
         if [ "$RUNNER_OS" == "macOS" ]; then
               brew install coreutils
