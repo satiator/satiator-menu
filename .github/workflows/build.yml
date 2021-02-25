@@ -16,6 +16,7 @@ jobs:
     - name: Build toolchain
       # based on https://github.com/miracoli/Saturn-SDK-GCC-SH2/blob/master/.github/workflows/build.yml
       # manual install of automake 1.16 only required on ubuntu < 20.04
+      # TODO: step takes >15 mins so cache output https://github.com/actions/cache#Skipping-steps-based-on-cache-hit
       run: |
         if [ "$RUNNER_OS" == "macOS" ]; then
               brew install coreutils
@@ -50,9 +51,14 @@ jobs:
         sudo apt-get -y install cmake
         make
       working-directory: satiator-menu
-      
+    - name: Upload config.log artifact
+      uses: actions/upload-artifact@v2
+      if: ${{ failure() }}
+      with:
+        name: configlogs
+        path: '**/config.log'
     - name: Upload menu.bin artifact
       uses: actions/upload-artifact@v2
       with:
         name: menu.bin
-        path: satiator-menu/menu.bin
+        path: satiator-menu/out/menu.bin
