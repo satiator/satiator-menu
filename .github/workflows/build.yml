@@ -8,6 +8,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Check out satiator-menu
+      # user/org needs to have a fork of iapetus as submodule is defined as ../iapetus.git
+      uses: actions/checkout@v2
+      with:
+        path: satiator-menu
+        submodules: true
     - name: Check out toolchain
       uses: actions/checkout@v2
       with:
@@ -40,12 +46,6 @@ jobs:
         DOWNLOADDIR:  ${{ github.workspace }}/Saturn-SDK-GCC-SH2/download
         PROGRAM_PREFIX: sh-none-
         NCPU: 2
-    - name: Check out satiator-menu
-      # user/org needs to have a fork of iapetus as submodule is defined as ../iapetus.git
-      uses: actions/checkout@v2
-      with:
-        path: satiator-menu
-        submodules: true
     - name: Build satiator-menu
       run: |
         sudo apt-get -y install cmake
