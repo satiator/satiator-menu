@@ -19,13 +19,15 @@ jobs:
       with:
         repository: miracoli/Saturn-SDK-GCC-SH2
         path: Saturn-SDK-GCC-SH2
+    - name: Get toolchain commit
+      run: echo "toolchaincommit=$(git rev-parse HEAD)" >> $GITHUB_ENV
+      working-directory: Saturn-SDK-GCC-SH2
     - name: Restore cached toolchain
-      # TODO: better cache key - commit ID for toolchain repo?
       uses: actions/cache@v2
       id: toolchaincache
       with:
         path: Saturn-SDK-GCC-SH2/toolchain
-        key: toolchain
+        key: toolchain-${{ env.toolchaincommit }}
     - name: Build toolchain
       # Only build if we don't have a cached version
       if: steps.toolchaincache.outputs.cache-hit != 'true'
