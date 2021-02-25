@@ -14,18 +14,21 @@ jobs:
       with:
         path: satiator-menu
         submodules: true
-    - name: Restore cached toolchain
-      # Restoring before checkout should let files be overwritten if needed while still allowing incremental builds?
-      uses: actions/cache@v2
-      with:
-        path: Saturn-SDK-GCC-SH2
-        key: toolchain
     - name: Check out toolchain
       uses: actions/checkout@v2
       with:
         repository: miracoli/Saturn-SDK-GCC-SH2
         path: Saturn-SDK-GCC-SH2
+    - name: Restore cached toolchain
+      # TODO: better cache key - commit ID for toolchain repo?
+      uses: actions/cache@v2
+      id: toolchaincache
+      with:
+        path: Saturn-SDK-GCC-SH2/toolchain
+        key: toolchain
     - name: Build toolchain
+      # Only build if we don't have a cached version
+      if: steps.toolchaincache.outputs.cache-hit != 'true'
       # based on https://github.com/miracoli/Saturn-SDK-GCC-SH2/blob/master/.github/workflows/build.yml
       # manual install of automake 1.16 only required on ubuntu < 20.04
       run: |
@@ -37,7 +40,6 @@ jobs:
         sudo apt-get -y install ./automake_1.16.1-4_all.deb
         sudo apt-get -y install automake autoconf autoconf-archive autotools-dev bison texinfo
         ./build-elf.sh
-        echo '${{ github.workspace }}/Saturn-SDK-GCC-SH2/toolchain/bin' >> $GITHUB_PATH
       working-directory: Saturn-SDK-GCC-SH2
       env: 
         SRCDIR: ${{ github.workspace }}/Saturn-SDK-GCC-SH2/source
@@ -51,6 +53,8 @@ jobs:
         DOWNLOADDIR:  ${{ github.workspace }}/Saturn-SDK-GCC-SH2/download
         PROGRAM_PREFIX: sh-none-
         NCPU: 2
+    - name: Add toolchain to path
+      run: echo '${{ github.workspace }}/Saturn-SDK-GCC-SH2/toolchain/bin' >> $GITHUB_PATH
     - name: Build satiator-menu
       run: |
         sudo apt-get -y install cmake
