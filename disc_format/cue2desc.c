@@ -202,8 +202,10 @@ static cue2desc_error_t handle_file(char *params) {
     int ret = stat(filename, &st);
     if (ret < 0) {
         cdparse_set_error("Could not stat track file '%s'", filename);
+        free(filename);
         return e_bad_track_file;
     }
+    free(filename);
 
     cur_filesize = st.st_size;
 
