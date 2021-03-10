@@ -1,3 +1,9 @@
+# v65
+
+## Fixed
+
+- Reading flash ID from Am29F010, Am29F010A is fixed
+
 # v64
 
 ## New features
