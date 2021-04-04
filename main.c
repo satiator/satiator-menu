@@ -1,5 +1,6 @@
 #include <iapetus.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include "satiator.h"
 #include <string.h>
 #include "cdparse.h"
@@ -65,6 +66,24 @@ void launch_game(const char *filename) {
             break;
     }
     menu_error("Boot failed!", error);
+}
+
+static int file_exists(const char *name) {
+    struct stat st;
+    int ret = stat(name, &st);
+    return ret == 0;
+}
+
+void try_autoboot(void) {
+    if (file_exists("autoboot.iso")) {
+        launch_game("autoboot.iso");
+        return;
+    }
+
+    if (file_exists("autoboot.cue")) {
+        launch_game("autoboot.cue");
+        return;
+    }
 }
 
 char pathbuf[512];
@@ -207,8 +226,11 @@ const file_ent top_menu_options[] = {
 };
 
 void main_menu(void) {
-    menu_init();
     s_chdir("\\");
+
+    try_autoboot();
+
+    menu_init();
     image_menu();
 
     while (1) {
