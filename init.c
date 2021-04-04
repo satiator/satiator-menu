@@ -48,8 +48,10 @@ extern char _load_start, _load_end, _bss_end, _free_ram_end;
 
 void main_menu(void);
 
-void start(void) __attribute__((section(".start")));
-void start(void) {
+uint32_t boot_arg;
+
+void start(uint32_t) __attribute__((section(".start")));
+void start(uint32_t arg) {
     // the BIOS only reads 0x1000 bytes when we begin. read the
     // lot and zero BSS
     int nsec = ((&_load_end-&_load_start-1) / 0x800) + 1;
@@ -61,6 +63,8 @@ void start(void) {
         "mov %0, r15"
         : : "r" (&_free_ram_end)
     );
+
+    boot_arg = arg;
 
     // copy VDP1 RAM first; some games depend on memory they don't initialise
     memcpy(vdp1_stash, (void*)VDP1_RAM, sizeof(vdp1_stash));

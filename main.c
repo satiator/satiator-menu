@@ -244,10 +244,13 @@ const file_ent top_menu_options[] = {
     {"Format SD card", 0, &format_menu},
 };
 
+extern uint32_t boot_arg;
+
 void main_menu(void) {
     s_chdir("\\");
 
-    try_autoboot();
+    if (boot_arg != S_BOOT_NO_AUTOLOAD)
+        try_autoboot();
 
     menu_init();
     image_menu();
