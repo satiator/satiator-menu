@@ -24,7 +24,7 @@ BASE_CFLAGS = -O2 -m2 -nostdlib -Wall -ggdb3 -ffunction-sections -fdata-sections
 
 CFLAGS ?= $(BASE_CFLAGS)
 CFLAGS += -I$(IAPETUS_SRC)/src
-CFLAGS += -I. -Idisc_format -Igui
+CFLAGS += -I. -Idisc_format -Igui -Ilibsatiator
 
 IAPETUS_LIBDIR=iapetus-build/src
 
@@ -44,7 +44,7 @@ ifeq ($(DEBUG), yes)
 	CFLAGS += -DDEBUG
 endif
 
-OBJS := $(addprefix out/,$(notdir $(SRCS:.c=.o)))
+OBJS := $(addprefix out/,$(SRCS:.c=.o))
 
 default: $(NEWLIB_LIBDIR)/libc-nosys.a $(IAPETUS_LIBDIR)/libiapetus.a out/menu.bin
 
@@ -59,21 +59,13 @@ out/%_code.bin: out/%.elf
 out/menu.elf: menu.ld $(OBJS) $(IAPETUS_LIBDIR)/libiapetus.a $(NEWLIB_LIBDIR)/libc-nosys.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -T menu.ld -Wl,-Map=out/menu.map $(OBJS) -liapetus -lc-nosys -lgcc
 
-out/%.o: %.c out/.dir_exists $(CC_DEPS)
+out/%.o: %.c $(CC_DEPS)
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-out/%.o: %.s out/.dir_exists $(CC_DEPS)
+out/%.o: %.s $(CC_DEPS)
+	@mkdir -p $(dir $@)
 	$(AS) $< -o $@
-
-out/%.o: disc_format/%.c $(CC_DEPS)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-out/%.o: gui/%.c $(CC_DEPS)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-out/.dir_exists:
-	mkdir -p out
-	touch out/.dir_exists
 
 clean:
 	rm -f out/*

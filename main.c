@@ -38,7 +38,6 @@ void launch_game(const char *filename) {
         return;
     }
 
-    dbgprintf("Loading ISO: '%s'\n", filename);
     int ret = image2desc(filename, "out.desc");
     if (ret) {
         menu_error("Disc load failed!", cdparse_error_string ? cdparse_error_string : "Unknown error");
