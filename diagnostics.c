@@ -28,10 +28,10 @@ static void measure_sd_latency(void) {
     for (int i=0; i<SD_RUNS; i++) {
         menu_progress_update(i);
 
-        int ret = s_get_sd_latency(wp, &errors);
+        int ret = s_get_sd_latency(wp, &errors, SD_SAMPLES);
         total_errors += errors;
         if (ret) {
-            menu_error("SD latency", "Error retrieving SD latency. Are you on FW >= 156?");
+            menu_error("SD latency", "Error retrieving SD latency. Are you on FW >= 157?");
             return;
         }
         wp += SD_SAMPLES;
