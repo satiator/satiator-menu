@@ -9,6 +9,9 @@
 #include "gmenu.h"
 #include "jhloader.h"
 
+void elf_launch(const char *filename);
+extern const char *elf_error;
+
 int image_file_filter(file_ent *entry) {
     if (entry->isdir)
         return 1;
@@ -18,6 +21,8 @@ int image_file_filter(file_ent *entry) {
         return 1;
     if (!strcasecmp(&entry->name[len-4], ".iso"))
         return 1;
+    if (!strcasecmp(&entry->name[len-4], ".elf"))
+        return 1;
 
     return 0;
 }
@@ -25,6 +30,14 @@ int image_file_filter(file_ent *entry) {
 void restore_vdp_mem(void);
 
 void launch_game(const char *filename) {
+    int len = strlen(filename);
+    if (!strcasecmp(&filename[len-4], ".elf")) {
+        elf_launch(filename);
+        if (elf_error)
+            menu_error("ELF load failed!", elf_error);
+        return;
+    }
+
     dbgprintf("Loading ISO: '%s'\n", filename);
     int ret = image2desc(filename, "out.desc");
     if (ret) {
@@ -75,6 +88,13 @@ static int file_exists(const char *name) {
 }
 
 void try_autoboot(void) {
+    if (file_exists("autoboot.elf")) {
+        elf_launch("autoboot.elf");
+        if (elf_error)
+            menu_error("ELF load failed!", elf_error);
+        return;
+    }
+
     if (file_exists("autoboot.iso")) {
         launch_game("autoboot.iso");
         return;
