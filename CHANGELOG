@@ -1,3 +1,10 @@
+# v66
+
+## New features
+
+- Move low level API out to libsatiator, to be shared with other developers' apps: https://github.com/satiator/libsatiator
+- Don't autoboot if an app has explicitly requested to reset to the Satiator menu using libsatiator
+
 # v65
 
 ## New features
