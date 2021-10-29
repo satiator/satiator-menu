@@ -16,7 +16,7 @@ function disable_flags () {
 
 export TARGET_CFLAGS="-m2 -fno-stack-protector"
 ${NEWLIB_SRC}/configure --prefix=${PREFIX} \
-                        --target=sh-elf $(disable_flags) \
+                        --target=sh2-elf $(disable_flags) \
                         --enable-lite-exit \
                         --enable-newlib-nano-formatted-io \
                         --enable-newlib-nano-malloc \
