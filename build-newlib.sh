@@ -5,7 +5,7 @@ pwd
 set -e
 
 PREFIX=`pwd`/prefix/
-NEWLIB_SRC=`pwd`/newlib/
+NEWLIB_SRC=`pwd`/newlib
 
 mkdir -p ${PREFIX}
 
