@@ -14,7 +14,7 @@ CROSS_COMPILE ?= sh-elf-
 
 # Absolute location of Iapetus source tree
 IAPETUS_SRC ?= $(shell pwd)/iapetus
-NEWLIB_SRC ?= $(shell pwd)/newlib/newlib
+NEWLIB_SRC ?= $(shell pwd)/newlib
 
 CC = $(CROSS_COMPILE)gcc
 AS = $(CROSS_COMPILE)as
