@@ -1,3 +1,28 @@
+# v66
+
+## New features
+
+- Move low level API out to libsatiator, to be shared with other developers' apps: https://github.com/satiator/libsatiator
+- Don't autoboot if an app has explicitly requested to reset to the Satiator menu using libsatiator
+
+# v65
+
+## New features
+
+- Autobooting disc images. Files named autoboot.elf, autoboot.iso or autoboot.cue will be loaded automatically on startup, in that order of priority.
+- Ability to boot ELF files directly without having to go through SEGA logo, et cetera. This leaves the Satiator in API mode, which may require adjustments to your code.
+    Note that Jo Engine's "game.elf" is usually not an ELF file but instead a COFF; it can be converted by adding a rule like this to your makefile:
+
+real.elf: game.elf
+	# the actual conversion
+	$(CONV) -O elf32-sh $< temporary.elf
+	# ditch debug info and symbols for a much smaller file
+	$(CONV) temporary.elf --strip-all $@
+
+## Fixed
+
+- Reading flash ID from Am29F010, Am29F010A found in certain AR carts is fixed
+
 # v64
 
 ## New features

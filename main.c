@@ -1,5 +1,6 @@
 #include <iapetus.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include "satiator.h"
 #include <string.h>
 #include "cdparse.h"
@@ -7,6 +8,9 @@
 #include "syscall.h"
 #include "gmenu.h"
 #include "jhloader.h"
+
+void elf_launch(const char *filename);
+extern const char *elf_error;
 
 int image_file_filter(file_ent *entry) {
     if (entry->isdir)
@@ -17,6 +21,8 @@ int image_file_filter(file_ent *entry) {
         return 1;
     if (!strcasecmp(&entry->name[len-4], ".iso"))
         return 1;
+    if (!strcasecmp(&entry->name[len-4], ".elf"))
+        return 1;
 
     return 0;
 }
@@ -24,7 +30,14 @@ int image_file_filter(file_ent *entry) {
 void restore_vdp_mem(void);
 
 void launch_game(const char *filename) {
-    dbgprintf("Loading ISO: '%s'\n", filename);
+    int len = strlen(filename);
+    if (!strcasecmp(&filename[len-4], ".elf")) {
+        elf_launch(filename);
+        if (elf_error)
+            menu_error("ELF load failed!", elf_error);
+        return;
+    }
+
     int ret = image2desc(filename, "out.desc");
     if (ret) {
         menu_error("Disc load failed!", cdparse_error_string ? cdparse_error_string : "Unknown error");
@@ -65,6 +78,31 @@ void launch_game(const char *filename) {
             break;
     }
     menu_error("Boot failed!", error);
+}
+
+static int file_exists(const char *name) {
+    struct stat st;
+    int ret = stat(name, &st);
+    return ret == 0;
+}
+
+void try_autoboot(void) {
+    if (file_exists("autoboot.elf")) {
+        elf_launch("autoboot.elf");
+        if (elf_error)
+            menu_error("ELF load failed!", elf_error);
+        return;
+    }
+
+    if (file_exists("autoboot.iso")) {
+        launch_game("autoboot.iso");
+        return;
+    }
+
+    if (file_exists("autoboot.cue")) {
+        launch_game("autoboot.cue");
+        return;
+    }
 }
 
 char pathbuf[512];
@@ -206,9 +244,15 @@ const file_ent top_menu_options[] = {
     {"Format SD card", 0, &format_menu},
 };
 
+extern uint32_t boot_arg;
+
 void main_menu(void) {
-    menu_init();
     s_chdir("\\");
+
+    if (boot_arg != S_BOOT_NO_AUTOLOAD)
+        try_autoboot();
+
+    menu_init();
     image_menu();
 
     while (1) {
