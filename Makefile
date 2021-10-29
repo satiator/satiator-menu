@@ -10,7 +10,7 @@
 DEBUG := yes
 
 # Set to point to your toolchain
-CROSS_COMPILE ?= sh-none-elf-
+CROSS_COMPILE ?= sh-elf-
 
 # Absolute location of Iapetus source tree
 IAPETUS_SRC ?= $(shell pwd)/iapetus
