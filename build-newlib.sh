@@ -15,7 +15,14 @@ function disable_flags () {
 }
 
 export TARGET_CFLAGS="-m2 -fno-stack-protector"
-${NEWLIB_SRC}/configure --prefix=${PREFIX} --target=sh-elf $(disable_flags) --enable-lite-exit --enable-newlib-nano-formatted-io --enable-newlib-nano-malloc --enable-target-optspace --enable-newlib-reent-small --disable-multilib
+${NEWLIB_SRC}/configure --prefix=${PREFIX} \
+                        --target=sh-elf $(disable_flags) \
+                        --enable-lite-exit \
+                        --enable-newlib-nano-formatted-io \
+                        --enable-newlib-nano-malloc \
+                        --enable-target-optspace \
+                        --enable-newlib-reent-small \
+                        --disable-multilib
 
 make -j8
 make install
