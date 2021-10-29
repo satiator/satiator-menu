@@ -5,7 +5,7 @@ pwd
 set -e
 
 PREFIX=`pwd`/prefix/
-ISLP=`pwd`/isl/
+ISLP=/opt/isl-0.12.2/
 
 mkdir -p ${PREFIX}
 
