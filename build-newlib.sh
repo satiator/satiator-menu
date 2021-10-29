@@ -5,6 +5,7 @@ pwd
 set -e
 
 PREFIX=`pwd`/prefix/
+ISLP=`pwd`/isl/
 
 mkdir -p ${PREFIX}
 
@@ -18,6 +19,7 @@ export TARGET_CFLAGS="-m2 -fno-stack-protector"
 ${NEWLIB_SRC}/configure --prefix=${PREFIX} \
                         --program-prefix=sh2-elf- \
                         --target=sh-elf \
+                        --with-isl=${ISLP} \
                         --enable-lite-exit \
                         --enable-newlib-nano-formatted-io \
                         --enable-newlib-nano-malloc \
