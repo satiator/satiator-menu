@@ -16,7 +16,13 @@ function disable_flags () {
 }
 
 
-export TARGET="sh-elf"
+export TARGET=sh-elf
+export CC=${PROGPREFIX}gcc
+export LD=${PROGPREFIX}ld
+export AS=${PROGPREFIX}as
+export AR=${PROGPREFIX}ar
+export RANLIB=${PROGPREFIX}ranlib
+export BUILD_CC=gcc
 export CC_FOR_TARGET=${PROGPREFIX}gcc
 export LD_FOR_TARGET=${PROGPREFIX}ld
 export AS_FOR_TARGET=${PROGPREFIX}as
