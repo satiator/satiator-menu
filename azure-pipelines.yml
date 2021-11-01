@@ -14,7 +14,7 @@ steps:
   submodules: true
   displayName: 'clone sub modules'
 - script: |
-    sudo apt-get install texinfo
+    apt-get install texinfo
   displayName: 'install texinfo'
 - script: |
     make
