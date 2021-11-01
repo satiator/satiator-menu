@@ -14,13 +14,12 @@ CROSS_COMPILE ?= sh-none-elf-
 
 # Absolute location of Iapetus source tree
 IAPETUS_SRC ?= $(shell pwd)/iapetus
-NEWLIB_SRC ?= $(shell pwd)/newlib
 
 CC = $(CROSS_COMPILE)gcc
 AS = $(CROSS_COMPILE)as
 OBJCOPY = $(CROSS_COMPILE)objcopy
 
-BASE_CFLAGS = -O2 -m2 -nostdlib -Wall -ggdb3 -ffunction-sections -fdata-sections -fno-stack-protector
+BASE_CFLAGS = -O2 -m2 -Wall -ggdb3 -ffunction-sections -fdata-sections -fno-stack-protector
 
 CFLAGS ?= $(BASE_CFLAGS)
 CFLAGS += -I$(IAPETUS_SRC)/src
@@ -28,12 +27,7 @@ CFLAGS += -I. -Idisc_format -Igui -Ilibsatiator
 
 IAPETUS_LIBDIR=iapetus-build/src
 
-NEWLIB_ARCH=$(patsubst %-,%,$(basename $(CROSS_COMPILE)))
-NEWLIB_PREFIX=$(CURDIR)/newlib-build/prefix/$(NEWLIB_ARCH)
-NEWLIB_LIBDIR=$(NEWLIB_PREFIX)/lib
-BASE_CFLAGS += -I$(NEWLIB_PREFIX)/include
-
-LDFLAGS += -L$(IAPETUS_LIBDIR) -L$(NEWLIB_LIBDIR) -Wl,--gc-sections
+LDFLAGS += -nostdlib -L$(IAPETUS_LIBDIR) -Wl,--gc-sections -Lout/
 
 VERSION ?= $(shell git describe --always --dirty --match aotsrintsoierats) $(shell date +%y%m%d%H%M%S)
 CFLAGS += -DVERSION='"$(VERSION)"'
@@ -46,9 +40,7 @@ endif
 
 OBJS := $(addprefix out/,$(SRCS:.c=.o))
 
-default: $(NEWLIB_LIBDIR)/libc-nosys.a $(IAPETUS_LIBDIR)/libiapetus.a out/menu.bin
-
-CC_DEPS = $(NEWLIB_LIBDIR)/libc-nosys.a
+default: $(IAPETUS_LIBDIR)/libiapetus.a out/menu.bin
 
 out/menu.bin: ip.bin out/menu_code.bin
 	cat $^ > $@
@@ -56,7 +48,7 @@ out/menu.bin: ip.bin out/menu_code.bin
 out/%_code.bin: out/%.elf
 	$(OBJCOPY) -O binary -R .noload $< $@
 
-out/menu.elf: menu.ld $(OBJS) $(IAPETUS_LIBDIR)/libiapetus.a $(NEWLIB_LIBDIR)/libc-nosys.a
+out/menu.elf: menu.ld $(OBJS) $(IAPETUS_LIBDIR)/libiapetus.a out/libc-nosys.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -T menu.ld -Wl,-Map=out/menu.map $(OBJS) -liapetus -lc-nosys -lgcc
 
 out/%.o: %.c $(CC_DEPS)
@@ -67,11 +59,19 @@ out/%.o: %.s $(CC_DEPS)
 	@mkdir -p $(dir $@)
 	$(AS) $< -o $@
 
+NEWLIB_LIBC=$(shell CROSS_COMPILE=$(CROSS_COMPILE) ./find-libc)
+out/libc-nosys.a: $(NEWLIB_LIBC)
+	# strip out the syscalls; we will supply them
+	echo in $<
+	echo out $@
+	cp $< $@
+	$(CROSS_COMPILE)ar d $@ lib_a-syscalls.o
+
 clean:
-	rm -f out/*
+	rm -rf out/*
 
 distclean:
-	rm -rf out iapetus-build newlib-build
+	rm -rf out iapetus-build
 
 iapetus-build/Makefile: $(CC_DEPS)
 	mkdir -p iapetus-build
@@ -79,18 +79,5 @@ iapetus-build/Makefile: $(CC_DEPS)
 
 iapetus-build/src/libiapetus.a: iapetus-build/Makefile
 	+(cd iapetus-build; make -f src/CMakeFiles/iapetus.dir/build.make VERBOSE=1 src/libiapetus.a)
-
-newlib-build/Makefile:
-	mkdir -p newlib-build
-	+(cd newlib-build; NEWLIB_SRC=$(NEWLIB_SRC) ../build-newlib.sh)
-
-$(NEWLIB_LIBDIR)/libc.a: newlib-build/Makefile
-	+(cd newlib-build; make && make install)
-
-# newlib disregards the --disable-newlib-supplied-syscalls configure argument on most arches >:(
-$(NEWLIB_LIBDIR)/libc-nosys.a: $(NEWLIB_LIBDIR)/libc.a
-	cp $< $@
-	$(CROSS_COMPILE)ar d $@ lib_a-syscalls.o
-
 
 .DELETE_ON_ERROR:

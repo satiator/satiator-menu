@@ -1,0 +1,14 @@
+#!/bin/sh
+
+IFS=:
+for dir in $(${CROSS_COMPILE}gcc -print-search-dirs | grep libraries | cut -d= -f2-)
+do
+    if [ -f $dir/m2/libc.a ]
+    then
+        echo $dir/m2/libc.a
+        exit 0
+    fi
+done
+
+echo Did not find libc.a! >&2
+exit 1
