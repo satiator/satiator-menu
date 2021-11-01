@@ -8,7 +8,7 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
-container: retrohead/satiator-build-env
+container: retrohead/satiator-build-env:latest
 steps:
 - script: |
     make
