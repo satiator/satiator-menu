@@ -27,7 +27,8 @@ steps:
   inputs:
     rootFolderOrFile: 'out/archive/' 
     includeRootFolder: false 
-    archiveFile: '$(Build.ArtifactStagingDirectory)/satiator_menu.tar.gz' 
+    archiveType: 7z
+    archiveFile: '$(Build.ArtifactStagingDirectory)/satiator_menu.zip' 
     replaceExistingArchive: true 
 - task: PublishBuildArtifacts@1
   inputs:
