@@ -34,7 +34,7 @@ steps:
     #tagPattern: # Optional
     tag: '66' # Required when action == Edit || Action == Delete || TagSource == Manual
     #title: # Optional
-    releaseNotesSource: 'inline' # Optional. Options: file, inline
+    releaseNotesSource: 'input' # Optional. Options: file, inline
     releaseNotesInline: 'CHANGELOG: v66'
     #releaseNotesFilePath: # Optional. Use the contents of a file as release notes. 
     #releaseNotes: # Optional
