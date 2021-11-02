@@ -18,28 +18,28 @@ steps:
   displayName: 'make'
 - task: CopyFiles@2
   inputs:
-    contents: 'out/menu.bin'
+    contents: 'out/*.zip'
     targetFolder: $(Build.ArtifactStagingDirectory)
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: $(Build.ArtifactStagingDirectory)
     artifactName: 'drop'
-#- task: GitHubRelease@0
-  #inputs:
-    #gitHubConnection: 
-    #repositoryName: '$(Build.Repository.Name)' 
-    #action: 'create' # Options: create, edit, delete
-    #target: '$(Build.SourceVersion)' # Required when action == Create || Action == Edit
-    #tagSource: 'auto' # Required when action == Create# Options: auto, manual
+- task: GitHubRelease@0
+  inputs:
+    gitHubConnection: 
+    repositoryName: '$(Build.Repository.Name)' 
+    action: 'create' # Options: create, edit, delete
+    target: '$(Build.SourceVersion)' # Required when action == Create || Action == Edit
+    tagSource: 'manual' # Required when action == Create# Options: auto, manual
     #tagPattern: # Optional
-    #tag: # Required when action == Edit || Action == Delete || TagSource == Manual
+    tag: '66' # Required when action == Edit || Action == Delete || TagSource == Manual
     #title: # Optional
-    #releaseNotesSource: 'file' # Optional. Options: file, inline
-    #releaseNotesInline: Use this option to manually enter release notes. Use with releaseNotesSource = inline
+    releaseNotesSource: 'inline' # Optional. Options: file, inline
+    releaseNotesInline: 'CHANGELOG: v66'
     #releaseNotesFilePath: # Optional. Use the contents of a file as release notes. 
     #releaseNotes: # Optional
-    #assets: '$(Build.ArtifactStagingDirectory)/*' # Optional
-    #assetUploadMode: 'delete' # Optional. Options: delete, replace
+    assets: '$(Build.ArtifactStagingDirectory)/*' # Optional
+    assetUploadMode: 'replace' # Optional. Options: delete, replace
     #isDraft: false # Optional
     #isPreRelease: false # Optional
     #addChangeLog: true # Optional
