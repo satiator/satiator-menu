@@ -18,7 +18,10 @@ steps:
   displayName: 'make'
 - task: CopyFiles@2
   inputs:
-    contents: 'out/*(.bin|.elf|.map)'
+    contents: |
+      out/menu.bin
+      out/menu.elf
+      out/menu.map
     targetFolder: out/archive
 - task: ArchiveFiles@2
   inputs:
