@@ -22,7 +22,7 @@ steps:
       out/menu.bin
       out/menu.elf
       out/menu.map
-      iapetus-build/Makefile
+      iapetus-build/src/libiapetus.a
     targetFolder: out/archive
 - task: ArchiveFiles@2
   inputs:
