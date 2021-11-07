@@ -22,6 +22,7 @@ steps:
       out/menu.bin
       out/menu.elf
       out/menu.map
+      iapetus-build/Makefile
     targetFolder: out/archive
 - task: ArchiveFiles@2
   inputs:
