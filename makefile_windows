@@ -1,0 +1,63 @@
+# Copyright (c) 2015 James Laird-Wah
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, you can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+# whether to enable debug printf()s, etc.
+# set to yes to enable
+DEBUG := yes
+COMPILER_DIR ?= Compiler
+
+# Set to point to your toolchain
+CC=$(COMPILER_DIR)/WINDOWS/bin/sh-elf-gcc.exe
+AR=$(COMPILER_DIR)/WINDOWS/sh-elf/bin/ar.exe
+AS=$(COMPILER_DIR)/WINDOWS/sh-elf/bin/as.exe
+OBJCOPY=$(COMPILER_DIR)/WINDOWS/sh-elf/bin/objcopy.exe
+
+# Absolute location of Iapetus source tree
+IAPETUS_SRC ?= iapetus
+
+
+BASE_CFLAGS = -O2 -m2 -Wall -ggdb3 -ffunction-sections -fdata-sections -fno-stack-protector
+
+CFLAGS ?= $(BASE_CFLAGS)
+CFLAGS += -I$(IAPETUS_SRC)/src
+CFLAGS += -I. -Idisc_format -Igui -Ilibsatiator
+
+IAPETUS_LIBDIR=iapetus-build/src
+
+LDFLAGS += -nostdlib -L$(IAPETUS_LIBDIR) -Wl,--gc-sections -Lout/
+
+VERSION ?= $(shell git describe --always --dirty --match aotsrintsoierats)
+CFLAGS += -DVERSION='"$(VERSION)"'
+
+SRCS := init.c gui/fade.c libsatiator/satiator.c syscall.c jhloader.c main.c gui/gmenu.c gui/filelist.c clock.c disc_format/cdparse.c disc_format/cue2desc.c ar.c diagnostics.c elfloader.c
+
+ifeq ($(DEBUG), yes)
+	CFLAGS += -DDEBUG
+endif
+
+OBJS := $(SRCS:.c=.o)
+
+default: menu_code.bin
+
+%_code.bin: %.elf
+	$(OBJCOPY) -O binary -R .noload $< $@
+
+menu.elf: menu.ld $(OBJS) $(COMPILER_DIR)/WINDOWS/sh-elf/lib/libiapetus.a $(COMPILER_DIR)/WINDOWS/sh-elf/lib/libc.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ -T menu.ld -Wl,-Map=out/menu.map $(OBJS) -liapetus -lc -lgcc
+
+%.o: %.c $(CC_DEPS)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o: %.s $(CC_DEPS)
+	$(AS) $< -o $@
+
+clean:
+	rm -rf *.o
+	rm -rf gui/*.o
+	rm -r out
+
+.DELETE_ON_ERROR:

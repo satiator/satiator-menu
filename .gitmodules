@@ -1,6 +1,6 @@
 [submodule "iapetus"]
 	path = iapetus
-	url = ../iapetus.git
+	url = https://github.com/satiator/iapetus
 [submodule "libsatiator"]
 	path = libsatiator
-	url = ../libsatiator.git
+	url = https://github.com/satiator/libsatiator

@@ -28,11 +28,20 @@ Next up:
 
 To get started:
 
+Linux
 ```
 git clone https://github.com/satiator/satiator-menu.git
 cd satiator-menu
 git submodule update --init --recursive
 make
+```
+
+Windows
+```
+git clone --branch use-toolchain-newlib https://github.com/satiator/satiator-menu.git
+cd satiator-menu
+git submodule update --init --recursive
+build
 ```
 
 This will configure and build 
