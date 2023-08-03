@@ -27,6 +27,68 @@ int image_file_filter(file_ent *entry) {
     return 0;
 }
 
+int is_multidisc_dir(file_ent *entry, int nents) {
+    // precondition: list must be sorted
+    char *basename = entry[0].name;
+    char *discnum = strrchr(basename, '1');
+    if (!discnum)
+        return 0;
+    if (nents > 9)
+        return 0;
+
+    int is_multidisc = 1;
+
+    for (int i=1; i<nents; i++) {
+        *discnum += 1;
+        if (strcmp(entry[i].name, basename)) {
+            is_multidisc = 0;
+            break;
+        }
+    }
+
+    *discnum = '1';
+    return is_multidisc;
+}
+
+const file_ent multidisc_menu_options[] = {
+    {"Disc 1", 0, NULL},
+    {"Disc 2", 0, NULL},
+    {"Disc 3", 0, NULL},
+    {"Disc 4", 0, NULL},
+    {"Disc 5", 0, NULL},
+    {"Disc 6", 0, NULL},
+    {"Disc 7", 0, NULL},
+    {"Disc 8", 0, NULL},
+    {"Disc 9", 0, NULL},
+};
+char *multidisc_menu(file_ent *list, int nents) {
+    char *basename = list[0].name;
+    char *discnum = strrchr(basename, '1');
+    if (!discnum)
+        return NULL;
+    if (nents > 9)
+        return NULL;
+
+
+    int entry = menu_picklist(multidisc_menu_options, nents, "Select disc");
+    if (entry < 0)
+        return NULL;
+
+    char *multidisc_desc = "out1.desc";
+    for (int i=0; i<nents; i++) {
+        multidisc_desc[3] = *discnum;
+        int ret = image2desc(basename, multidisc_desc);
+        if (ret) {
+            menu_error("Disc load failed!", cdparse_error_string ? cdparse_error_string : "Unknown error");
+            return NULL;
+        }
+        *discnum += 1;
+    }
+
+    multidisc_desc[3] = '1' + entry;
+    return strdup(multidisc_desc);
+}
+
 void restore_vdp_mem(void);
 
 void launch_game(const char *filename) {
@@ -38,10 +100,18 @@ void launch_game(const char *filename) {
         return;
     }
 
-    int ret = image2desc(filename, "out.desc");
-    if (ret) {
-        menu_error("Disc load failed!", cdparse_error_string ? cdparse_error_string : "Unknown error");
-        return;
+    int is_desc = !strcasecmp(&filename[len-5], ".desc");
+
+    const char *descname;
+    if (is_desc) {
+        descname = filename;
+    } else {
+        descname = "out.desc";
+        int ret = image2desc(filename, descname);
+        if (ret) {
+            menu_error("Disc load failed!", cdparse_error_string ? cdparse_error_string : "Unknown error");
+            return;
+        }
     }
 
     fadeout(0x20);
@@ -52,11 +122,11 @@ void launch_game(const char *filename) {
 
     restore_vdp_mem();
 
-    s_emulate("out.desc");
+    s_emulate(descname);
     while (is_cd_present());
     while (!is_cd_present());
     s_mode(s_cdrom);
-    ret = boot_disc();
+    int ret = boot_disc();
 
     s_mode(s_api);   // failed, restore order
     s_emulate("");  // close the old file
@@ -124,6 +194,12 @@ void image_menu(void) {
         if (dirname[1])
             dirname++;
         strlcat(namebuf, dirname, sizeof(namebuf));
+
+        if (is_multidisc_dir(list, nents)) {
+            name = multidisc_menu(list, nents);
+            goto chosen;
+        }
+
         int entry = menu_picklist(list, nents, namebuf);
         int ret;
         if (entry == -1) {
@@ -149,6 +225,8 @@ void image_menu(void) {
         }
         else
             name = strdup(list[entry].name);
+
+chosen:
         file_list_free(list, nents);
 
         if (name) {
@@ -167,7 +245,7 @@ const file_ent format_confirm_menu_options[] = {
     {"No", 0, NULL},
     {"No", 0, NULL},
     {"No", 0, NULL},
-    {"Yes", 0, 1},
+    {"Yes", 0, (void*)1},
 };
 
 extern uint8_t vdp1_stash[];
