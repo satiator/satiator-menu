@@ -40,7 +40,7 @@ int is_multidisc_dir(file_ent *entry, int nents) {
 
     for (int i=1; i<nents; i++) {
         *discnum += 1;
-        if (strcmp(entry[i].name, basename)) {
+        if (strcasecmp(entry[i].name, basename)) {
             is_multidisc = 0;
             break;
         }
