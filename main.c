@@ -150,6 +150,14 @@ void launch_game(const char *filename) {
     menu_error("Boot failed!", error);
 }
 
+void update_region_txt(void) {
+    const char *region_string = get_region_string();
+
+    int fd = s_open("/region.txt", FA_WRITE|FA_CREATE_ALWAYS);
+    s_write(fd, region_string, 1);
+    s_close(fd);
+}
+
 static int file_exists(const char *name) {
     struct stat st;
     int ret = stat(name, &st);
@@ -326,6 +334,8 @@ extern uint32_t boot_arg;
 
 void main_menu(void) {
     s_chdir("\\");
+
+    update_region_txt();
 
     if (boot_arg != S_BOOT_NO_AUTOLOAD)
         try_autoboot();

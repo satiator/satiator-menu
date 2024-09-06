@@ -6,3 +6,5 @@ int boot_disc(void);
 #define BOOT_BAD_REGION         -8
 
 #define BOOT_UNRECOGNISED_BIOS  -1024
+
+const char *get_region_string(void);

@@ -34,7 +34,7 @@ static struct region_s {
    {0,   NULL}
 };
 
-static const char *get_region_string(void) {
+const char *get_region_string(void) {
    // fetch SMPC region byte
    smpc_wait_till_ready();
    SMPC_REG_IREG(0) = 0x01;
