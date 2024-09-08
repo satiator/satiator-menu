@@ -205,6 +205,8 @@ void image_menu(void) {
 
         if (is_multidisc_dir(list, nents)) {
             name = multidisc_menu(list, nents);
+            if (!name)
+                goto updir;
             goto chosen;
         }
 
@@ -214,7 +216,9 @@ void image_menu(void) {
             if (!strcmp(pathbuf, "/")) {
                 return;
             } else {
-                char *last_slash = strrchr(pathbuf, '/');
+                char *last_slash;
+updir:
+                last_slash = strrchr(pathbuf, '/');
                 if (last_slash == pathbuf)
                     last_slash++;
                 *last_slash = '\0';
