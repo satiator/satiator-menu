@@ -1,3 +1,14 @@
+# v68
+
+## New features
+
+- Support for multidisc booting with FW 161
+- Support for region-free modchip mode with FW 161
+
+## Changes
+
+- Promoted from beta status ;-)
+
 # v67
 
 ## Fixed
