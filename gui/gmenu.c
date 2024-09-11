@@ -76,7 +76,7 @@ struct {
     int acc_l, acc_r, acc_u, acc_d;
 } pad_state;
 
-static uint16_t get_pressed_buttons(void) {
+uint16_t get_pressed_buttons(void) {
     // Get pressed buttons on any/all controllers
     uint16_t pressed = 0;
 
@@ -201,6 +201,10 @@ void init_bitmap_mode(void) {
     vdp_set_font(SCREEN_NBG0, &main_font, 1);
 }
 
+volatile uint8_t *menu_get_bitmap_fb(void) {
+    return main_font.out;
+}
+
 void menu_init(void) {
     vdp_set_default_palette();
     init_bitmap_mode();
@@ -212,7 +216,7 @@ void menu_init(void) {
     if (space)
         *space = '\0';
 
-    asprintf(&version, "BETA FW%s MNU%s", fw_version, VERSION);
+    asprintf(&version, "FW%s MNU%s", fw_version, VERSION);
     space = strchr(version, ' ');
     if (space)
         space = strchr(space+1, ' ');
