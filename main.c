@@ -151,8 +151,6 @@ void launch_game(const char *filename) {
 }
 
 void update_region_txt(void) {
-    const char *region_string = get_region_string();
-
     int fd = s_open("/region.txt", FA_WRITE|FA_CREATE_ALWAYS);
     s_write(fd, region_string, 1);
     s_close(fd);

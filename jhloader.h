@@ -7,4 +7,5 @@ int boot_disc(void);
 
 #define BOOT_UNRECOGNISED_BIOS  -1024
 
-const char *get_region_string(void);
+const char *get_region_string(void);    // must only call in init.c before per_init()
+extern const char *region_string;       // set in init.c, read from anywhere

@@ -50,6 +50,8 @@ void main_menu(void);
 
 uint32_t boot_arg;
 
+const char *region_string;
+
 void start(uint32_t) __attribute__((section(".start")));
 void start(uint32_t arg) {
     // the BIOS only reads 0x1000 bytes when we begin. read the
@@ -73,7 +75,9 @@ void start(uint32_t arg) {
 
     // enable Satiator API
     s_mode(s_api);
-    set_satiator_rtc();
+    set_satiator_rtc();     // calls SMPC
+
+    region_string = get_region_string();    // calls SMPC
 
     sysinit();
 

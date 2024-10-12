@@ -53,20 +53,16 @@ const char *get_region_string(void) {
 
 static int set_image_region(u8 *base)
 {
-   const char *str = get_region_string();
-   if (!str)
-      return -1;
-
    // set region header
    memset(base + 0x40, ' ', 0x10);
-   base[0x40] = str[0];
+   base[0x40] = region_string[0];
 
    // set region footer
    char *ptr = (char*)base + 0xe00;
    memset(ptr, ' ', 0x20);
    *(uint32_t*)ptr = 0xa00e0009;
    strcpy(ptr + 4, "For ");
-   strcpy(ptr + 8, str);
+   strcpy(ptr + 8, region_string);
    char *end = ptr + 4 + strlen(ptr + 4);
    *end = '.';
    return 0;
