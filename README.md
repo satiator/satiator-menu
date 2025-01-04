@@ -40,3 +40,6 @@ This will configure and build
 the Satiator menu.
 You may need to edit the `Makefile` to set your cross
 compiler. The default toolchain prefix is `sh-none-elf-`.
+
+A Dockerfile is provided in `docker/` which builds the same toolchain I use for
+release builds.
