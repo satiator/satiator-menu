@@ -1,3 +1,15 @@
+# v70
+
+## Fixed
+
+- Don't interpret numbered folders as a multidisc configuration.
+  This would result in a "no dot in filename" error if you had
+  a folder containing subfolders named "XYZ Disc 1", "XYZ Disc 2" etc.
+
+  To use the multidisc functionality, put all of the disc images in the same
+  directory, as described in the docs:
+  https://wiki.satiator.net/menu#multi-disc_mode
+
 # v69
 
 ## Fixed

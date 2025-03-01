@@ -35,12 +35,19 @@ int is_multidisc_dir(file_ent *entry, int nents) {
         return 0;
     if (nents > 9)
         return 0;
+    if (entry[0].isdir) // We don't support one-disc-per-dir, only all-discs-in-one-dir
+        return 0;
 
     int is_multidisc = 1;
 
     for (int i=1; i<nents; i++) {
         *discnum += 1;
         if (strcasecmp(entry[i].name, basename)) {
+            is_multidisc = 0;
+            break;
+        }
+
+        if (entry[i].isdir) {
             is_multidisc = 0;
             break;
         }
