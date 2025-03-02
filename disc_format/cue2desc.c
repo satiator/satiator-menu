@@ -81,6 +81,7 @@ uint8_t cur_track, cur_q_mode;
 uint16_t cur_secsize;
 data_format_t cur_data_format;
 segment_t *segments;
+char *dirname;  // prepended to all filenames, if non-NULL; must include trailing slash
 char **filenames;
 int n_filenames;
 int nseg, open_seg;
@@ -188,7 +189,14 @@ static cue2desc_error_t handle_file(char *params) {
     if ((slash = strrchr(filename_start, '/')))
         filename_start = slash+1;
 
-    char *filename = strdup(filename_start);
+    char *filename;
+    if (dirname) {
+        filename = malloc(strlen(dirname) + strlen(filename_start) + 1);
+        strcpy(filename, dirname);
+        strcat(filename, filename_start);
+    } else {
+        filename = strdup(filename_start);
+    }
 
     while (*mode && whitespace(*mode))
         mode++;
@@ -401,6 +409,15 @@ int cue2desc(const char *cue_file, const char *desc_file) {
         return e_no_cue_file;
     }
 
+    dirname = strdup(cue_file);
+    char *slash = strchr(dirname, '/');
+    if (slash) {
+        slash[1] = '\0';
+    } else {
+        free(dirname);
+        dirname = NULL;
+    }
+
     cur_filesize = cur_track = cur_secsize = 0;
     cur_fileindex = open_seg = -1;
     nseg = 0;
@@ -470,6 +487,10 @@ int cue2desc(const char *cue_file, const char *desc_file) {
     ret = write_desc_file(desc_file, segments, nseg);
 
 out:
+    if (dirname) {
+        free(dirname);
+        dirname = NULL;
+    }
     for (int i=0; i<n_filenames; i++)
         free(filenames[i]);
     free(filenames);
