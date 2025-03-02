@@ -27,6 +27,27 @@ int image_file_filter(file_ent *entry) {
     return 0;
 }
 
+int is_single_image_dir(const char *name, char **image_name_out) {
+    int nents;
+    char *dirname = strdup(name);
+    char *slash = strchr(dirname, '/');
+    if (slash)
+        *slash = '\0';
+    file_ent *list = file_list_create(dirname, &nents, image_file_filter);
+    free(dirname);
+
+    int single = 0;
+
+    if (nents == 1 && !list[0].isdir) {
+        single = 1;
+        if (image_name_out)
+            *image_name_out = strdup(list[0].name);
+    }
+
+    file_list_free(list, nents);
+    return single;
+}
+
 int is_multidisc_dir(file_ent *entry, int nents) {
     // precondition: list must be sorted
     char *basename = entry[0].name;
@@ -35,24 +56,29 @@ int is_multidisc_dir(file_ent *entry, int nents) {
         return 0;
     if (nents > 9)
         return 0;
-    if (entry[0].isdir) // We don't support one-disc-per-dir, only all-discs-in-one-dir
+    if (nents < 2)
         return 0;
 
-    int is_multidisc = 1;
+    int multi_dirs = entry[0].isdir;
+    if (multi_dirs && !is_single_image_dir(entry[0].name, NULL))
+        return 0;
+
+    int is_multidisc = 0;
 
     for (int i=1; i<nents; i++) {
         *discnum += 1;
-        if (strcasecmp(entry[i].name, basename)) {
-            is_multidisc = 0;
-            break;
-        }
+        if (strcasecmp(entry[i].name, basename))
+            goto no;
 
-        if (entry[i].isdir) {
-            is_multidisc = 0;
-            break;
-        }
+        if (entry[i].isdir != multi_dirs)
+            goto no;
+
+        if (entry[i].isdir && !is_single_image_dir(entry[i].name, NULL))
+            goto no;
     }
 
+    is_multidisc = 1;
+no:
     *discnum = '1';
     return is_multidisc;
 }
@@ -76,23 +102,40 @@ char *multidisc_menu(file_ent *list, int nents) {
     if (nents > 9)
         return NULL;
 
+    int multidir = list[0].isdir;
 
     int entry = menu_picklist(multidisc_menu_options, nents, "Select disc");
     if (entry < 0)
         return NULL;
 
     char *multidisc_desc = "out1.desc";
+    char *desc_numeral = &multidisc_desc[3];
     for (int i=0; i<nents; i++) {
-        multidisc_desc[3] = *discnum;
-        int ret = image2desc(basename, multidisc_desc);
+        *desc_numeral = *discnum;
+
+        char *imgname = basename;
+        if (multidir) {
+            char *file_in_dir;
+            is_single_image_dir(basename, &file_in_dir);
+            // basename already has a slash
+            imgname = malloc(strlen(basename) + strlen(file_in_dir) + 1);
+            strcpy(imgname, basename);
+            strcat(imgname, file_in_dir);
+            free(file_in_dir);
+        }
+
+        int ret = image2desc(imgname, multidisc_desc);
         if (ret) {
             menu_error("Disc load failed!", cdparse_error_string ? cdparse_error_string : "Unknown error");
             return NULL;
         }
+
+        if (multidir)
+            free(imgname);
         *discnum += 1;
     }
 
-    multidisc_desc[3] = '1' + entry;
+    *desc_numeral = '1' + entry;
     return strdup(multidisc_desc);
 }
 
