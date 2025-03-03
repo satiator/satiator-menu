@@ -1,3 +1,10 @@
+# v71
+
+## Changes
+
+- Handle multidisc setups where each disc is in a separate folder.
+  This should suit the natural way many people set up their collections.
+
 # v70
 
 ## Fixed
